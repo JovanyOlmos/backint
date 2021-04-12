@@ -1,0 +1,8 @@
+# Impide ver el directorio
+
+Options -Indexes
+
+# URL amigables
+
+RewriteEngine On
+RewriteRule ^(.+) backint.php
