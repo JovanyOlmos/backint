@@ -8,7 +8,7 @@ require_once("./definitions/HTTP.php");
 use backint\core\DBObject;
 use backint\core\http;
 class CTObject {
-    private ?string $tableName;
+    private string $tableName;
     public function __construct($tableName) {
         $this->tableName = TABLE_CONFIG_PREFIX."_".$tableName;
     }

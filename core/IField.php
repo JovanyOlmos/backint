@@ -2,10 +2,10 @@
 namespace backint\core;
 require_once("./config/config.php");
 class IField {
-    private ?int $sqlFormat; //DB Field Require Quotes to be saved
-    private ?string $columnName; //DB Field Name
-    private ?string $configTableName; //DB table's name where getting config
-    public ?string $fieldValue;
+    private int $sqlFormat; //DB Field Require Quotes to be saved
+    private string $columnName; //DB Field Name
+    private string $configTableName; //DB table's name where getting config
+    public string $fieldValue;
 
     public function __construct(string $DBColumnName, int $sqlFormat){
         $this->configTableName = TABLE_CONFIG_PREFIX."_".$DBColumnName;

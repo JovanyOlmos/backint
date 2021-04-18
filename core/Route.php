@@ -2,9 +2,9 @@
 namespace backint\core;
 
 class Route {
-    private ?int $num_params;
-    private ?string $URL;
-    private ?string $type;
+    private int $num_params;
+    private string $URL;
+    private string $type;
     private $functionName;
     private $apiModel;
 

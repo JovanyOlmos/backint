@@ -11,10 +11,12 @@ use backint\server\api\APIModelFichas;
 require_once("./server/api-models/APIModelFichas.php");
 use backint\server\api\APIModelUsuarios;
 require_once("./server/api-models/APIModelUsuarios.php");
+use backint\server\api\APIModelPersonas;
+require_once("./server/api-models/APIModelPersonas.php");
 
 class router{
     private $routeConfig;
-    public ?array $routes;
+    public array $routes;
 
     public function __construct() {
         $this->addRoute("GET", "config/?", new APIModelFichas(), "getFichaById");
@@ -25,6 +27,7 @@ class router{
         $this->addRoute("DELETE", "fichas/?", new APIModelFichas(), "deleteFicha");
         $this->addRoute("POST", "usuarios", new APIModelUsuarios(), "postUser");
         $this->addRoute("GET", "usuarios/?", new APIModelUsuarios(), "getUser");
+        $this->addRoute("POST", "personas", new APIModelPersonas(), "postPersona");
     }
 
     private function addRoute(string $type, string $URL, $apiModel, string $functionName) {

@@ -3,10 +3,10 @@ namespace backint\core;
 require_once("./config/config.php");
 class OIField {
     //private ?string $inputType; //Field type
-    private ?bool $sqlFormatRequireQuote; //DB Field Require Quotes to be saved
-    private ?string $columnName; //DB Field Name
-    private ?string $configTableName; //DB table's name where getting config
-    private ?string $fieldValue;
+    private bool $sqlFormatRequireQuote; //DB Field Require Quotes to be saved
+    private string $columnName; //DB Field Name
+    private string $configTableName; //DB table's name where getting config
+    private string $fieldValue;
 
     public function __construct(string $DBColumnName, bool $sqlFormatRequireQuote){
         $this->configTableName = TABLE_CONFIG_PREFIX."_".$DBColumnName;

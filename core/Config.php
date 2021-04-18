@@ -12,7 +12,7 @@ require_once("./definitions/ConfigTables.php");
 require_once("./core/http.php");
 
 class Config {
-    private ?string $tableName;
+    private string $tableName;
     public function __construct($tableName) {
         $this->tableName = TABLE_CONFIG_PREFIX."_".$tableName;
     }

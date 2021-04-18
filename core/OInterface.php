@@ -4,11 +4,11 @@ require_once("./core/IField.php");
 require_once("./config/config.php");
 use backint\core\IField;
 class OInterface {
-    private ?string $DBTableName;
-    private ?string $columnNameFromIdTable;
-    private ?string $configurationTable;
-    private ?int $idObject = 0;
-    public ?array $objectFields;
+    private string $DBTableName;
+    private string $columnNameFromIdTable;
+    private string $configurationTable;
+    private int $idObject = 0;
+    public array $objectFields;
 
     public function __construct(string $DBTableName, string $columnNameFromIdTable) {
         $this->objectFields = array();

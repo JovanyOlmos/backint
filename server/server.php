@@ -14,7 +14,7 @@ header("Access-Control-Allow-Headers: *");
 header("Content-Type: application/json; charset=utf-8");
 session_start();
 class server{
-    private ?string $method;
+    private string $method;
     private $requestBody;
 
     public function __construct() {

@@ -4,8 +4,8 @@ use backint\core\http;
 require_once("./definitions/HTTP.php");
 require_once("./core/http.php");
 class ErrObj {
-    private ?string $message;
-    private ?int $code;
+    private string $message;
+    private int $code;
     
     public function __construct(string $err, int $code) {
         $this->message = $err;
