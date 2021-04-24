@@ -8,10 +8,17 @@ require_once("./core/ErrObj.php");
 require_once("./server/handler.php");
 require_once("./definitions/HTTP.php");
 require_once("./config/config.php");
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: *");
-header("Access-Control-Allow-Headers: *");
-header("Content-Type: application/json; charset=utf-8");
+header("Access-Control-Allow-Origin: ".ALLOWED_ORIGINS);
+$allowedMethodsString = "";
+$index = 0;
+foreach (ALLOWED_METHODS as $key => $value) {
+    if($index > 0)
+        $allowedMethodsString .= ",";
+    $allowedMethodsString .= $value;
+}
+header("Access-Control-Allow-Methods: ".$allowedMethodsString);
+header("Access-Control-Allow-Headers: ".ALLOWED_HEADERS);
+header("Content-Type: application/json; charset=".DEFAULT_CHARSET);
 session_start();
 class server{
     private string $method;
@@ -32,7 +39,12 @@ class server{
 
     public function serve($route, $apiKey) {
         if($apiKey == API_KEY) {
-            if($this->method == 'POST' || $this->method == 'PUT' || $this->method == 'GET' || $this->method == 'DELETE')
+            $isValidMethod = false;
+            foreach (ALLOWED_METHODS as $key => $value) {
+                if($value == $this->method)
+                    $isValidMethod = true;
+            }
+            if($isValidMethod)
             {
                 $handler = new handler();
                 $handler->processRequest($this->method, $route, $this->requestBody);

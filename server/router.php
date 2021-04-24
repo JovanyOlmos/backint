@@ -2,32 +2,24 @@
 namespace backint\server;
 use backint\core\Config;
 use backint\core\Route;
+
 require_once("./core/Config.php");
 require_once("./core/Route.php");
 require_once("./config/config.php");
 
 //API Model files
-use backint\server\api\APIModelFichas;
-require_once("./server/api-models/APIModelFichas.php");
-use backint\server\api\APIModelUsuarios;
-require_once("./server/api-models/APIModelUsuarios.php");
-use backint\server\api\APIModelPersonas;
-require_once("./server/api-models/APIModelPersonas.php");
+use backint\server\api\APIModelExample;
+require_once("./server/api-models/APIModelExample.php");
 
 class router{
     private $routeConfig;
     public array $routes;
 
     public function __construct() {
-        $this->addRoute("GET", "config/?", new APIModelFichas(), "getFichaById");
-        $this->addRoute("GET", "fichas/?", new APIModelFichas(), "getFichaById");
-        $this->addRoute("GET", "fichas/idpersona/?", new APIModelFichas(), "getFichasByIdPersona");
-        $this->addRoute("POST", "fichas", new APIModelFichas(), "postFicha");
-        $this->addRoute("PUT", "fichas", new APIModelFichas(), "putFicha");
-        $this->addRoute("DELETE", "fichas/?", new APIModelFichas(), "deleteFicha");
-        $this->addRoute("POST", "usuarios", new APIModelUsuarios(), "postUser");
-        $this->addRoute("GET", "usuarios/?", new APIModelUsuarios(), "getUser");
-        $this->addRoute("POST", "personas", new APIModelPersonas(), "postPersona");
+        $this->addRoute("GET", "example/?", new APIModelExample(), "getExample");
+        $this->addRoute("POST", "example", new APIModelExample(), "postExample");
+        $this->addRoute("DELETE", "example/?", new APIModelExample(), "deleteExample");
+        $this->addRoute("PUT", "example", new APIModelExample(), "putExample");
     }
 
     private function addRoute(string $type, string $URL, $apiModel, string $functionName) {

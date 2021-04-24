@@ -9,7 +9,7 @@ class ControllerOrder {
         $this->typeOrder = $typeOrder;
     }
 
-    public function getOrder() {
+    public function getFilter() {
         $orderBy = " ORDER BY ".$this->iField->getColumnName()." ".$this->typeOrder;
         return $orderBy;
     }

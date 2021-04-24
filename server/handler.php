@@ -3,11 +3,14 @@ namespace backint\server;
 use backint\core\Config;
 use backint\server\router;
 use backint\core\http;
+use backint\core\ErrObj;
+use backint\server\specialRouter;
 require_once("./definitions/HTTP.php");
-require_once("./core/http.php");
 require_once("./core/Config.php");
 require_once("./server/router.php");
+require_once("./server/specialRouter.php");
 require_once("./config/config.php");
+require_once("./core/ErrObj.php");
 
 class handler{
     public function __construct() {
@@ -27,17 +30,33 @@ class handler{
         if($isConfig == ROUTE_CONFIG) {
             $config = new Config($params[0]);
             $config->getConfig();
-
         } else {
-            $router = new router();
-            if(array_key_exists($router->getIndexRoute($method, $route), $router->routes))
+            $isSpecialRoute = false;
+            foreach (SPECIAL_ROUTES as $specialRoute => $value) {
+                if($value == $isConfig)
+                    $isSpecialRoute = true;
+            }
+            if($isSpecialRoute)
             {
-                $router->routes[$router->getIndexRoute($method, $route)]->executeProcess($params, $requestBody);
+                $specialRoute = new specialRouter($isConfig, $params, $requestBody);
             }
             else
             {
-                $http = new http();
-                $http->sendResponse(NOT_FOUND, $http->messageJSON("Route does not exist"));
+                try {
+                    $router = new router();
+                    if(array_key_exists($router->getIndexRoute($method, $route), $router->routes))
+                    {
+                        $router->routes[$router->getIndexRoute($method, $route)]->executeProcess($params, $requestBody);
+                    }
+                    else
+                    {
+                        $err = new ErrObj("Route does not exist", NOT_FOUND);
+                        $err->sendError();
+                    }
+                } catch (\Throwable $th) {
+                    $err = new ErrObj("Fatal error on server routes", INTERNAL_SERVER_ERROR);
+                    $err->sendError();
+                }
             }
         }
         

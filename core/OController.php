@@ -72,10 +72,40 @@ class OController {
         return $err;
     }
 
-    public function fillObjInterfaceById(int $id, OInterface $objInterface) {
+    public function get() {
+        if(func_num_args() == 2)
+            return $this->getSimple(func_get_args()[0], func_get_args()[1]);
+        elseif(func_num_args() == 3)
+            return $this->getWithFilter(func_get_args()[0], func_get_args()[1], func_get_args()[2]);
+        elseif(func_num_args() == 4)
+            return $this->getWithFilterAndSort(func_get_args()[0], func_get_args()[1], func_get_args()[2], func_get_args()[3]);
+    }
+
+    private function getSimple(int $id, OInterface $objInterface) {
         $dbObject = new DBObj();
         $sqlQuery = "SELECT * FROM ".$objInterface->getDBTableName()." WHERE ".$objInterface->getColumnNameFromIdTable()." = ".$id.";";
         $doFetch = $dbObject->getFetchAssoc($sqlQuery);
+        return $this->fillObject($doFetch, $objInterface);
+    }
+
+    private function getWithFilter(int $id, OInterface $objInterface, $filter) {
+        $dbObject = new DBObj();
+        $sqlQuery = "SELECT * FROM ".$objInterface->getDBTableName()." WHERE ".$objInterface->getColumnNameFromIdTable()." = ".$id." ";
+        $sqlQuery .= $filter->getFilter().";";
+        $doFetch = $dbObject->getFetchAssoc($sqlQuery);
+        return $this->fillObject($doFetch, $objInterface);
+    }
+
+    private function getWithFilterAndSort(int $id, OInterface $objInterface, $filter, $sort) {
+        $dbObject = new DBObj();
+        $sqlQuery = "SELECT * FROM ".$objInterface->getDBTableName()." WHERE ".$objInterface->getColumnNameFromIdTable()." = ".$id." ";
+        $sqlQuery .= $filter->getFilter()." ";
+        $sqlQuery .= $sort->getFilter().";";
+        $doFetch = $dbObject->getFetchAssoc($sqlQuery);
+        return $this->fillObject($doFetch, $objInterface);
+    }
+
+    private function fillObject($doFetch, OInterface $objInterface) {
         if($doFetch != null)
         {
             while($row = $doFetch->fetch_assoc())
@@ -97,10 +127,19 @@ class OController {
         return $objInterface;
     }
 
-    public function getObjInterfaceArrayByForeignId(int $foreignId, string $foreignField, OInterface $objInterface) { //Aun no funciona
-        $dbObject = NEW DBObj();
+    public function getArray() {
+        if(func_num_args() == 3)
+            return $this->getArrayForeignKey(func_get_args()[0], func_get_args()[1], func_get_args()[2]);
+    }
+
+    private function getArrayForeignKey(int $foreignId, string $foreignField, OInterface $objInterface) {
+        $dbObject = new DBObj();
         $sqlQuery = "SELECT * FROM ".$objInterface->getDBTableName()." WHERE ".$foreignField." = ".$foreignId.";";
         $doFetch = $dbObject->getFetchAssoc($sqlQuery);
+        return $this->fillObject($doFetch, $objInterface);
+    }
+
+    private function fillObjects($doFetch, $objInterface) {
         $objectIndex = 0;
         $interfaceObjects = array();
         if($doFetch != null)

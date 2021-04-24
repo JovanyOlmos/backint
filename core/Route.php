@@ -1,5 +1,7 @@
 <?php
 namespace backint\core;
+require_once("./core/ErrObj.php");
+require_once("./definitions/HTTP.php");
 
 class Route {
     private int $num_params;
@@ -19,10 +21,15 @@ class Route {
 
     public function executeProcess($params, $requestBody) {
         $fun = $this->functionName;
-        if($requestBody != null)
-            $this->apiModel->$fun($params, $requestBody);
-        else
-            $this->apiModel->$fun($params);
+        try {
+            if($requestBody != null)
+                $this->apiModel->$fun($params, $requestBody);
+            else
+                $this->apiModel->$fun($params);
+        } catch (\Throwable $th) {
+            $err = new ErrObj("Undefined method for this route on server", INTERNAL_SERVER_ERROR);
+            $err->sendError();
+        }
     }
 
     public function getNumParams() {

@@ -12,17 +12,25 @@ class DBObj {
     }
 
     public function getFetchAssoc(string $query) {
-        if($result = mysqli_query($this->connection, $query))
+        if($result = mysqli_query($this->connection, $query)) {
+            mysqli_close($this->connection);
             return $result;
-        else
+        }
+        else {
+            mysqli_close($this->connection);
             return null;
+        }
     }
 
     public function doQuery(string $query) {
-        if($result = mysqli_query($this->connection, $query))
+        if($result = mysqli_query($this->connection, $query)) {
+            mysqli_close($this->connection);
             return new ErrObj("", CREATED);
-        else
+        }
+        else {
+            mysqli_close($this->connection);
             return new ErrObj("".mysqli_error($this->connection), CONFILCT);
+        }
     }
 }
 ?>
