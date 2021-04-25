@@ -2,12 +2,12 @@
 namespace backint\core;
 require_once("./config/config.php");
 class IField {
-    private int $sqlFormat; //DB Field Require Quotes to be saved
-    private string $columnName; //DB Field Name
-    private string $configTableName; //DB table's name where getting config
-    public string $fieldValue;
+    private $sqlFormat; //DB Field Require Quotes to be saved
+    private $columnName; //DB Field Name
+    private $configTableName; //DB table's name where getting config
+    public $fieldValue;
 
-    public function __construct(string $DBColumnName, int $sqlFormat){
+    public function __construct($DBColumnName, $sqlFormat){
         $this->configTableName = TABLE_CONFIG_PREFIX."_".$DBColumnName;
         $this->columnName = $DBColumnName;
         $this->sqlFormat = $sqlFormat;
@@ -25,15 +25,15 @@ class IField {
         return $this->configTableName;
     }
 
-    public function setDBFormat(int $type) {
+    public function setDBFormat($type) {
         $this->sqlFormat = $type;
     }
 
-    public function setColumnName(string $name) {
+    public function setColumnName($name) {
         $this->columnName = $name;
     }
 
-    public function setConfigurationTableName(string $name) {
+    public function setConfigurationTableName($name) {
         $this->configTableName = $name;
     }
 }

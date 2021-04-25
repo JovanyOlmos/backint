@@ -9,7 +9,7 @@ require_once("./config/config.php");
 //include_once("./server/api-models/APIModelExample.php");
 
 class specialRouter{
-    private array $actions = array(
+    private $actions = array(
         "your-route" => array(
             0 => 'APIModelExample',
             1 => "getExample"

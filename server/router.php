@@ -13,7 +13,7 @@ require_once("./server/api-models/APIModelExample.php");
 
 class router{
     private $routeConfig;
-    public array $routes;
+    public $routes;
 
     public function __construct() {
         $this->addRoute("GET", "example/?", new APIModelExample(), "getExample");
@@ -22,11 +22,11 @@ class router{
         $this->addRoute("PUT", "example", new APIModelExample(), "putExample");
     }
 
-    private function addRoute(string $type, string $URL, $apiModel, string $functionName) {
+    private function addRoute($type, $URL, $apiModel, $functionName) {
         $this->routes[$type."_".$URL] = new Route($type, $URL, $apiModel, $functionName);
     }
 
-    public function getIndexRoute(string $type, string $URL) {
+    public function getIndexRoute($type, $URL) {
         $routeParams = explode("/", $URL);
         $routePrefix = explode("/", ROUTE_INDEX);
         $transformedRoute = "";

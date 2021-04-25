@@ -11,7 +11,7 @@ class OController {
 
     }
 
-    public function register(OInterface $objInterface) {
+    public function register($objInterface) {
         $dbObject = new DBObj();
         $sqlQuery = "INSERT INTO ".$objInterface->getDBTableName()." (";
         $sqlValues = "(";
@@ -40,14 +40,14 @@ class OController {
         return $err;
     }
 
-    public function delete(OInterface $objInterface) {
+    public function delete($objInterface) {
         $dbObject = new DBObj();
         $sqlQuery = "DELETE FROM ".$objInterface->getDBTableName()." WHERE ".$objInterface->getColumnNameFromIdTable()." = ".$objInterface->getIdObject();
         $err = $dbObject->doQuery($sqlQuery);
         return $err;
     }
 
-    public function put(OInterface $objInterface) {
+    public function put($objInterface) {
         $dbObject = new DBObj();
         $sqlQuery = "UPDATE ".$objInterface->getDBTableName()." SET ";
         $index = 0;
@@ -81,14 +81,14 @@ class OController {
             return $this->getWithFilterAndSort(func_get_args()[0], func_get_args()[1], func_get_args()[2], func_get_args()[3]);
     }
 
-    private function getSimple(int $id, OInterface $objInterface) {
+    private function getSimple($id, $objInterface) {
         $dbObject = new DBObj();
         $sqlQuery = "SELECT * FROM ".$objInterface->getDBTableName()." WHERE ".$objInterface->getColumnNameFromIdTable()." = ".$id.";";
         $doFetch = $dbObject->getFetchAssoc($sqlQuery);
         return $this->fillObject($doFetch, $objInterface);
     }
 
-    private function getWithFilter(int $id, OInterface $objInterface, $filter) {
+    private function getWithFilter($id, $objInterface, $filter) {
         $dbObject = new DBObj();
         $sqlQuery = "SELECT * FROM ".$objInterface->getDBTableName()." WHERE ".$objInterface->getColumnNameFromIdTable()." = ".$id." ";
         $sqlQuery .= $filter->getFilter().";";
@@ -96,7 +96,7 @@ class OController {
         return $this->fillObject($doFetch, $objInterface);
     }
 
-    private function getWithFilterAndSort(int $id, OInterface $objInterface, $filter, $sort) {
+    private function getWithFilterAndSort($id, $objInterface, $filter, $sort) {
         $dbObject = new DBObj();
         $sqlQuery = "SELECT * FROM ".$objInterface->getDBTableName()." WHERE ".$objInterface->getColumnNameFromIdTable()." = ".$id." ";
         $sqlQuery .= $filter->getFilter()." ";
@@ -105,7 +105,7 @@ class OController {
         return $this->fillObject($doFetch, $objInterface);
     }
 
-    private function fillObject($doFetch, OInterface $objInterface) {
+    private function fillObject($doFetch, $objInterface) {
         if($doFetch != null)
         {
             while($row = $doFetch->fetch_assoc())

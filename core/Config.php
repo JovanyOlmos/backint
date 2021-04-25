@@ -13,7 +13,7 @@ require_once("./core/http.php");
 require_once("./definitions/SQLFormat.php");
 
 class Config {
-    private string $tableName;
+    private $tableName;
     public function __construct($tableName) {
         $this->tableName = TABLE_CONFIG_PREFIX."_".$tableName;
     }

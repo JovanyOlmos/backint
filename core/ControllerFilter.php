@@ -2,12 +2,12 @@
 namespace backint\core;
 require_once("./definitions/SQLFormat.php");
 class ControllerFilter {
-    private string $filter = "";
+    private $filter = "";
     
     public function __construct() {
     }
 
-    public function addFilter(IField $iField, string $operator, string $value) {
+    public function addFilter($iField, $operator, $value) {
         $this->filter .= " AND ".$iField->getColumnName()." ".$operator." ";
         if(SQL_FORMAT[$iField->getDBFormat()]) {
             if($iField->getDBFormat() == 2)

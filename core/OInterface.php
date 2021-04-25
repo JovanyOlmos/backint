@@ -4,20 +4,20 @@ require_once("./core/IField.php");
 require_once("./config/config.php");
 use backint\core\IField;
 class OInterface {
-    private string $DBTableName;
-    private string $columnNameFromIdTable;
-    private string $configurationTable;
-    private int $idObject = 0;
-    public array $objectFields;
+    private $DBTableName;
+    private $columnNameFromIdTable;
+    private $configurationTable;
+    private $idObject = 0;
+    public $objectFields;
 
-    public function __construct(string $DBTableName, string $columnNameFromIdTable) {
+    public function __construct($DBTableName, $columnNameFromIdTable) {
         $this->objectFields = array();
         $this->DBTableName = $DBTableName;
         $this->columnNameFromIdTable = $columnNameFromIdTable;
         $this->configurationTable = TABLE_CONFIG_PREFIX."_".$DBTableName;
     }
 
-    public function addField(string $DBColumnName, int $sqlFormat) {
+    public function addField($DBColumnName, $sqlFormat) {
         $iField = new IField($DBColumnName, $sqlFormat);
         $this->objectFields[$DBColumnName] = $iField;
         return $iField;
@@ -39,7 +39,7 @@ class OInterface {
         return $this->idObject;
     }
 
-    public function setIdObject(int $id) {
+    public function setIdObject($id) {
         $this->idObject = $id;
     }
 }

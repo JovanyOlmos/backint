@@ -22,7 +22,7 @@ class http {
         echo $json;
     }
 
-    public function fillObjectFromJSON(OInterface $objInterface, $requestBody) {
+    public function fillObjectFromJSON($objInterface, $requestBody) {
         foreach ($objInterface->objectFields as $key => $iField) {
             if(array_key_exists($iField->getColumnName(), $requestBody)) {
                 $iField->fieldValue = $requestBody[$iField->getColumnName()];
@@ -33,7 +33,7 @@ class http {
         return $objInterface;
     }
 
-    public function convertObjectToJSON(OInterface $objInterface) {
+    public function convertObjectToJSON($objInterface) {
         $json = '{';
         $index = 0;
         if($objInterface->getIdObject() > 0)
@@ -52,7 +52,7 @@ class http {
         return $json;
     }
 
-    public function convertArrayObjectToJSON(array $objInterfaces) {
+    public function convertArrayObjectToJSON($objInterfaces) {
         $json = '[';
         $indexObjct = 0;
         foreach ($objInterfaces as $key => $objInterface) {
@@ -65,7 +65,7 @@ class http {
         return $json;
     }
 
-    public function checkIfJSONIsComplete(OInterface $objInterface, $requestBody) {
+    public function checkIfJSONIsComplete($objInterface, $requestBody) {
         $exists = true;
         foreach ($objInterface->objectFields as $key => $iField) {
             if(!array_key_exists($iField->getColumnName(), $requestBody)) {

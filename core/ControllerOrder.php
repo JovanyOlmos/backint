@@ -1,10 +1,10 @@
 <?php
 namespace backint\core;
 class ControllerOrder {
-    private IField $iField;
-    private string $typeOrder;
+    private $iField;
+    private $typeOrder;
     
-    public function __construct(IField $iField, string $typeOrder) {
+    public function __construct($iField, $typeOrder) {
         $this->iField = $iField;
         $this->typeOrder = $typeOrder;
     }

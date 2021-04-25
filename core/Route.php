@@ -4,13 +4,13 @@ require_once("./core/ErrObj.php");
 require_once("./definitions/HTTP.php");
 
 class Route {
-    private int $num_params;
-    private string $URL;
-    private string $type;
+    private $num_params;
+    private $URL;
+    private $type;
     private $functionName;
     private $apiModel;
 
-    public function __construct(string $type, string $URL, $apiModel, string $functionName) {
+    public function __construct($type, $URL, $apiModel, $functionName) {
         $num_params = explode("/", $URL);
         $this->num_params = count($num_params);
         $this->type = $type;
@@ -44,15 +44,15 @@ class Route {
         return $this->type;
     }
 
-    public function setNumParams(int $num_params) {
+    public function setNumParams($num_params) {
         $this->num_params = $num_params;
     }
 
-    public function setURL(string $URL) {
+    public function setURL($URL) {
         $this->URL = $URL;
     }
 
-    public function setType(string $type) {
+    public function setType($type) {
         $this->type = $type;
     }
 }

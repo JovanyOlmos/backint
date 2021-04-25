@@ -11,7 +11,7 @@ class DBObj {
         $this->connection = new mysqli(HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE);
     }
 
-    public function getFetchAssoc(string $query) {
+    public function getFetchAssoc($query) {
         if($result = mysqli_query($this->connection, $query)) {
             mysqli_close($this->connection);
             return $result;
@@ -22,7 +22,7 @@ class DBObj {
         }
     }
 
-    public function doQuery(string $query) {
+    public function doQuery($query) {
         if($result = mysqli_query($this->connection, $query)) {
             mysqli_close($this->connection);
             return new ErrObj("", CREATED);
