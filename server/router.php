@@ -10,15 +10,12 @@ require_once("./config/config.php");
 //API Model files
 use backint\server\api\APIModelExample;
 require_once("./server/api-models/APIModelExample.php");
-use backint\server\api\APIModelPrestamos;
-require_once("./server/api-models/APIModelPrestamos.php");
 
 class router{
     private $routeConfig;
     public $routes;
 
     public function __construct() {
-        $this->addRoute("GET", "prestamos/?", new APIModelPrestamos(), "getPrestamo");
         $this->addRoute("GET", "example/?", new APIModelExample(), "getExample");
         $this->addRoute("POST", "example", new APIModelExample(), "postExample");
         $this->addRoute("DELETE", "example/?", new APIModelExample(), "deleteExample");
