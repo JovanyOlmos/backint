@@ -35,12 +35,19 @@ On this section you can configurate who can in and what they can do.
 
 ### USING backint-cmd.py
 backint-cmd is a tool developed on Python. This app will help you to create some objects in a easier and faster way. Some commands are:
-> itk -g -m arg  -> create a new api model object using an argument
-> itk -g -i arg  -> create a new inferface object using an argument
-> itk -g -c arg  -> create a MySQL sentence to create a configuration table using an argument and `TABLE_CONFIG_STRUCTURE` configuration.
-> itk -g -a arg  -> create a api model and a interface model using an argument
-> itk -a arg     -> create getters and setters using an Interface Object by a name pased by argument
-> itk ?          -> show all options on level command
+```
+Create a new api model object using an argument
+> itk -g -m arg
+Create a new inferface object using an argument
+> itk -g -i arg
+Create a MySQL sentence to create a configuration table using an argument and `TABLE_CONFIG_STRUCTURE` configuration
+> itk -g -c arg
+Create a api model and a interface model using an argument
+> itk -g -a arg
+Create getters and setters using an Interface Object by a name pased by argument
+> itk -a arg
+Show all options on level command
+> itk ?
 
 ### USING backint-cmd.php
 You do not have python? Do it by php.
