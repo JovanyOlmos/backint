@@ -10,31 +10,38 @@ define("ROUTE_CONFIG", "config");
 define("TABLE_CONFIG_STRUCTURE", array(
     array(
         "name" => "fieldName",
-        "type" => VARCHAR
+        "type" => VARCHAR,
+        "size" => "(50)"
     ),
     array(
         "name" => "label_es",
-        "type" => VARCHAR
+        "type" => VARCHAR,
+        "size" => "(50)"
     ),
     array(
         "name" => "label_en",
-        "type" => VARCHAR
+        "type" => VARCHAR,
+        "size" => "(50)"
     ),
     array(
         "name" => "type",
-        "type" => VARCHAR
+        "type" => VARCHAR,
+        "size" => "(20)"
     ),
     array(
         "name" => "required",
-        "type" => BOOLEAN
+        "type" => BOOLEAN,
+        "size" => ""
     ),
     array(
         "name" => "visible",
-        "type" => BOOLEAN
+        "type" => BOOLEAN,
+        "size" => ""
     ),
     array(
         "name" => "enabled",
-        "type" => BOOLEAN
+        "type" => BOOLEAN,
+        "size" => ""
     )
 ));
 

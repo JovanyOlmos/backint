@@ -8,7 +8,7 @@
     define("TEXT", "0");
     define("ENUM", "0");
     define("BLOB", "0");
-    define("BOOLEAN", "1");
+    define("BOOLEAN", "3");
     define("INT", "1");
     define("BIGINT", "1");
     define("SMALLINT", "1");
@@ -21,5 +21,7 @@
     define("SQL_FORMAT", array(
         0 => true,
         1 => false,
-        2 => true));
+        2 => true,
+        3 => false
+    ));
 ?>

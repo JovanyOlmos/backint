@@ -45,7 +45,17 @@ class http {
             if(SQL_FORMAT[$iField->getDBFormat()] && $iField->fieldValue != "null")
                 $json .= '"'.$iField->fieldValue.'"';
             else
-                $json .= $iField->fieldValue.'';
+            {
+                if($iField->getDBFormat() == BOOLEAN)
+                {
+                    if($iField->fieldValue)
+                        $json .= 'true';
+                    else
+                        $json .= 'false';
+                }
+                else
+                    $json .= $iField->fieldValue.'';
+            }
             $index++;
         }
         $json .= '}';

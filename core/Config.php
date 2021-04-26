@@ -8,7 +8,6 @@ require_once("./core/ErrObj.php");
 require_once("./core/DBObj.php");
 require_once("./config/config.php");
 require_once("./definitions/HTTP.php");
-require_once("./definitions/ConfigTables.php");
 require_once("./core/http.php");
 require_once("./definitions/SQLFormat.php");
 
