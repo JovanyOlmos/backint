@@ -28,8 +28,9 @@ class DBObj {
             return new ErrObj("", CREATED);
         }
         else {
+            $err = mysqli_error($this->connection)
             mysqli_close($this->connection);
-            return new ErrObj("".mysqli_error($this->connection), CONFILCT);
+            return new ErrObj("".$err, CONFILCT);
         }
     }
 }

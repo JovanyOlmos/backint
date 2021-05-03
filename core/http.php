@@ -37,7 +37,7 @@ class http {
         $json = '{';
         $index = 0;
         if($objInterface->getIdObject() > 0)
-            $json .= '"id": '.$objInterface->getIdObject().',';
+            $json .= '"'.$objInterface->getColumnNameFromIdTable().'": '.$objInterface->getIdObject().',';
         foreach ($objInterface->objectFields as $key => $iField) {
             if($index > 0)
                 $json .= ', ';
