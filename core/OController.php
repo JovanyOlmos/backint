@@ -136,7 +136,7 @@ class OController {
         $dbObject = new DBObj();
         $sqlQuery = "SELECT * FROM ".$objInterface->getDBTableName()." WHERE ".$foreignField." = ".$foreignId.";";
         $doFetch = $dbObject->getFetchAssoc($sqlQuery);
-        return $this->fillObject($doFetch, $objInterface);
+        return $this->fillObjects($doFetch, $objInterface);
     }
 
     private function fillObjects($doFetch, $objInterface) {
