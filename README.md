@@ -4,6 +4,10 @@ PHP Framework. Easier way to do an API.
 ## Get started
 ### Configuration
 Inside `config` folder you can find a configuration php file. All settings framework can adjusted by this file.
+
+#### Folder structure
+Once downloaded please add a folder called `api-models` inside `server` folder. Add another folder called `interfaces` on root. Create your APIModel and Interface Objects on their respective folders.
+
 #### URL
 Standard route on Backint is `backint\` that means you can access to the server using the route: `https://my-domain.com/backint/some-route`. If you want to change this route you must edit `ROUTE_INDEX` with your new route.
 
