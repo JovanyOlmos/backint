@@ -1,6 +1,7 @@
 <?php
 namespace backint\core;
 require_once("./core/DBObj.php");
+require_once("./definitions/SQLFormat.php");
 use backint\core\DBObj;
 class ObjQL {
     private $fields;//Array
@@ -30,7 +31,10 @@ class ObjQL {
                 foreach ($this->fields as $field => $fieldName) {
                     if($firstField > 0)
                         $jsonFields .= ',';
-                    $jsonFields .= '"'.$fieldName.'":'.'"'.$row[$fieldName].'"';   
+                    if(SQL_FORMAT[$fieldName[1]])
+                        $jsonFields .= '"'.$fieldName[0].'":'.'"'.$row[$fieldName[0]].'"';
+                    else 
+                        $jsonFields .= '"'.$fieldName[0].'":'.''.$row[$fieldName[0]].'';
                     $firstField++;
                 }
                 $jsonFields .= '}';

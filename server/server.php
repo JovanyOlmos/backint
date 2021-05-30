@@ -3,11 +3,13 @@ namespace backint\server;
 use backint\core\ErrObj;
 use backint\server\handler;
 use backint\core\http;
+use backint\core\Auth;
 require_once("./core/http.php");
 require_once("./core/ErrObj.php");
 require_once("./server/handler.php");
 require_once("./definitions/HTTP.php");
 require_once("./config/config.php");
+require_once("./core/Auth.php");
 header("Access-Control-Allow-Origin: ".ALLOWED_ORIGINS);
 $allowedMethodsString = "";
 $index = 0;
@@ -38,7 +40,8 @@ class server{
     }
 
     public function serve($route, $apiKey) {
-        if($apiKey == API_KEY) {
+        $auth = new Auth();
+        if($apiKey == API_KEY && $auth->checkCredentials($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $this->method)) {
             $isValidMethod = false;
             foreach (ALLOWED_METHODS as $key => $value) {
                 if($value == $this->method)

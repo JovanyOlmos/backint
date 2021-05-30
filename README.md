@@ -35,6 +35,20 @@ DATABASE_PASSWORD
 #### SECURITY
 On this section you can configurate who can in and what they can do.
 
+#### AUTH
+Backint has a basic auth system. You can enable or disable this auth. In case you want to use this auth method you must to define your users on auth-credentials.
+
+### Example
+```
+define("AUTH", array(
+    array(
+        "username" => "lord",
+        "password" => "123",
+        "level" => READ
+    )
+));
+```
+
 ### USING backint-cmd.py
 backint-cmd is a tool developed on Python. This app will help you to create some objects in a easier and faster way. Some commands are:
 ```
@@ -272,7 +286,8 @@ Backint contains an option where you can define an array with all fields you nee
 #### Example
 ```
 $this->objQL = new ObjQL(array(
-            "id", "folio"
+            array("id", INT), 
+            array("folio", VARCHAR)
         ));
 
 $json = $this->objQL->getJSON("SELECT id, folio FROM fichas WHERE ".$params[0]." = ".$params[1].";");
