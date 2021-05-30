@@ -18,8 +18,6 @@ Backint was design thinking about building a webpage using backend data. You can
 
 `TABLE_CONFIG_STRUCTURE` define whole table's structure. This config params is an array with name, type and size. You should define here how you can create your configuration tables.
 
-#### SPECIAL ROUTES
-`SPECIAL_ROUTES` define some routes that does not follow some basic and standard rules routes. On Backint a route is composed by regular params and id params. A regular params is a word and this word define a route. In adition an id params is a number and it will be represented by an '?'. Therefore, if you want to use a word like an id params you must create a special route and define it right here.
 
 #### DATABASE CONNECTION
 You must define all SQL params on this section. Params name:
