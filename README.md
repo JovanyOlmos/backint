@@ -5,7 +5,7 @@ PHP Framework. Easier way to do an API.
 ### Configuration
 Inside `config` folder you can find a configuration php file. All settings framework can adjusted by this file.
 #### URL
-Standard route on Backint is `backint\` that means you can access to the server using the route: `https://my-domain.com/backint/some-route`. If ypu want to change this route you must edit `ROUTE_INDEX` with your new route.
+Standard route on Backint is `backint\` that means you can access to the server using the route: `https://my-domain.com/backint/some-route`. If you want to change this route you must edit `ROUTE_INDEX` with your new route.
 
 #### CONFIGURATION TABLES
 Backint was design thinking about building a webpage using backend data. You can configurate all params about the configuration tables.
@@ -50,7 +50,6 @@ Show all options on level command
 > itk ?
 ```
 
-### USING backint-cmd.php
-You do not have python? Do it by php.
+### 
 
 Created by Interik Team

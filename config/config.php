@@ -45,11 +45,6 @@ define("TABLE_CONFIG_STRUCTURE", array(
     )
 ));
 
-/* SPECIAL ROUTES CONFIGURATIONS */
-define("SPECIAL_ROUTES", array(
-    "REPORTER" => "rpt"
-));
-
 /* DATABASE CONFIGURATION */
 define("DATABASE", "backint");
 define("HOST", "localhost");
