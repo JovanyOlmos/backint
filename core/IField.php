@@ -1,40 +1,75 @@
 <?php
 namespace backint\core;
 require_once("./config/config.php");
+
 class IField {
-    private $sqlFormat; //DB Field Require Quotes to be saved
-    private $columnName; //DB Field Name
-    private $configTableName; //DB table's name where getting config
-    public $fieldValue;
+    /**
+     * Database value type
+     * 
+     * @var string
+     */
+    private $format;
 
-    public function __construct($DBColumnName, $sqlFormat){
-        $this->configTableName = TABLE_CONFIG_PREFIX."_".$DBColumnName;
-        $this->columnName = $DBColumnName;
-        $this->sqlFormat = $sqlFormat;
+    /**
+     * Column name from database
+     * 
+     * @var string
+     */
+    private $columnName;
+
+    /**
+     * Value from field
+     * 
+     * @var any
+     */
+    public $value;
+
+    /**
+     * Constructor
+     * 
+     * @param string $DBColumnName
+     * 
+     * @param string $format MySQL field type
+     */
+    public function __construct($columnName, $format){
+        $this->columnName = $columnName;
+        $this->format = $format;
     }
 
-    public function getDBFormat() {
-        return $this->sqlFormat;
+    /**
+     * Get type from database
+     * 
+     * @return string
+     */
+    public function getFormat() {
+        return $this->format;
     }
 
+    /**
+     * Get column name
+     * 
+     * @return string
+     */
     public function getColumnName() {
         return $this->columnName;
     }
 
-    public function getConfigurationTableName() {
-        return $this->configTableName;
+    /**
+     * Set field type
+     * 
+     * @param string $type MySQL field type
+     */
+    public function setFormat($type) {
+        $this->format = $type;
     }
 
-    public function setDBFormat($type) {
-        $this->sqlFormat = $type;
-    }
-
+    /**
+     * Set column name
+     * 
+     * @param string $name
+     */
     public function setColumnName($name) {
         $this->columnName = $name;
-    }
-
-    public function setConfigurationTableName($name) {
-        $this->configTableName = $name;
     }
 }
 ?>

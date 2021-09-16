@@ -34,28 +34,6 @@ def autocompleteGettersAndSetters(name):
     file.close
     
 
-
-def createConfigTable(name):
-    file = open('./config/config.php', "r")
-    sqlSentence = "CREATE TABLE (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
-    for line in file:
-        if "name" in line:
-            line = line.replace(" ", "").replace("\n", "").replace("\"", "").replace("=>","").replace(",", "")
-            line = line[4:]
-            sqlSentence += " " + line
-        if "type" in line:
-            line = line.replace(" ", "").replace("\n", "").replace("\"", "").replace("=>","").replace(",", "")
-            line = line[4:]
-            sqlSentence += " " + line
-        if "size" in line:
-            line = line.replace(" ", "").replace("\n", "").replace("\"", "").replace("=>","").replace(",", "")
-            line = line[4:]
-            sqlSentence += line + ","
-    sqlSentence = sqlSentence[0:(len(sqlSentence) - 1)]
-    sqlSentence += ");"
-    print(sqlSentence)
-    file.close()
-
 def createInterfaceObject(name):
     file = open('./interfaces/OI' + name.capitalize() + '.php', "w")
     file.write('<?php\n')
@@ -66,8 +44,8 @@ def createInterfaceObject(name):
     file.write('class OI' + name.capitalize() + ' extends OInterface {\n')
     file.write('\t//itk autocomplete start' + os.linesep)
     file.write('\t//itk autocomplete end' + os.linesep)
-    file.write('\tpublic function __construct($DBTableName, $columnNameFromIdTable) {\n')
-    file.write('\t\tparent::__construct($DBTableName, $columnNameFromIdTable);' + os.linesep)
+    file.write('\tpublic function __construct($tableName, $PKFieldName) {\n')
+    file.write('\t\tparent::__construct($tableName, $PKFieldName);' + os.linesep)
     file.write('\t}\n')
     file.write('}\n')
     file.write('?>')
@@ -77,14 +55,19 @@ def createModelObject(name):
     file = open('./server/api-models/APIModel' + name.capitalize() + '.php', "w")
     file.write('<?php\n')
     file.write('namespace backint\\server\\api;\n')
+    file.write('require_once("./core/OController.php");\n')
+    file.write('require_once("./core/ControllerHelper/SQLControllerHelper.php");\n')
+    file.write('require_once("./core/http.php");\n')
+    file.write('require_once("./core/ObjQL.php");\n')
+    file.write('require_once("./interfaces/OI' + name.capitalize() + '.php");\n')
+    file.write('require_once("./core/APIModel.php");\n')
+    file.write('require_once("./definitions/HTTP.php");' + os.linesep)
     file.write('use backint\\core\\OController;\n')
+    file.write('use backint\\core\\ControllerHelper\\SQLControllerHelper;\n')
     file.write('use backint\\interfaces\\OI' + name.capitalize() + ';\n')
     file.write('use backint\\core\\http;\n')
-    file.write('require_once("./core/OController.php");\n')
-    file.write('require_once("./core/http.php");\n')
-    file.write('require_once("./interfaces/OI' + name.capitalize() + '.php");\n')
-    file.write('require_once("./definitions/HTTP.php");' + os.linesep)
-    file.write('class APIModel' + name.capitalize() + ' {' + os.linesep)
+    file.write('use backint\\core\\ObjQL;\n')
+    file.write('class APIModel' + name.capitalize() + ' extends APIModel {' + os.linesep)
     file.write('\tprivate $oi' + name.capitalize() + ';\n')
     file.write('\tprivate $oController;\n')
     file.write('\tprivate $http;\n\n')
@@ -92,10 +75,62 @@ def createModelObject(name):
     file.write('\t\t$this->oController = new OController();\n')
     file.write('\t\t$this->oi' + name.capitalize() + ' = new OI' + name.capitalize() + '("' + name + '", "id");\n')
     file.write('\t\t$this->http = new http();\n')
+    file.write('\t}\n\n')
+    file.write('\tpublic function getById($params) {\n')
+    file.write('\t\t$helper = new SQLControllerHelper();\n')
+    file.write('\t\t$helper->getControllerFilter()->addPKFilter($this->oi' + name.capitalize() + '->getPKFieldName(), $params[0]);\n')
+    file.write('\t\t$this->oi' + name.capitalize() + ' = $this->oController->selectSimple($this->oi' + name.capitalize() + ', $helper);\n')
+    file.write('\t\tif($this->oi' + name.capitalize() + '->getPKValue() > 0)\n')
+    file.write('\t\t{\n')
+    file.write('\t\t\t$json = $this->http->convertObjectToJSON($this->oi' + name.capitalize() + ');\n')
+    file.write('\t\t\t$this->http->sendResponse(OK, $json);\n')
+    file.write('\t\t}\n')
+    file.write('\t\telse\n')
+    file.write('\t\t{\n')
+    file.write('\t\t\t$this->http->sendResponse(NO_CONTENT, $this->http->messageToJSON("Resource does not exist"));\n')
+    file.write('\t\t}\n')
+    file.write('\t}\n\n')
+    file.write('\tpublic function create($params, $requestBody) {\n')
+    file.write('\t\t$this->oi' + name.capitalize() + ' = $this->http->fillObjectFromJSON($this->oi' + name.capitalize() + ', $requestBody);\n')
+    file.write('\t\t$err = $this->oController->insert($this->oi' + name.capitalize() + ');\n')
+    file.write('\t\tif($err->hasErrors())\n')
+    file.write('\t\t\t$err->sendError();\n')
+    file.write('\t\telse\n')
+    file.write('\t\t\t$this->http->sendResponse(CREATED, $this->http->messageToJSON("Created correctly"));\n')
+    file.write('\t}\n\n')
+    file.write('\tpublic function update($params, $requestBody) {\n')
+    file.write('\t\t$this->oi' + name.capitalize() + ' = $this->http->fillObjectFromJSON($this->oi' + name.capitalize() + ', $requestBody);\n')
+    file.write('\t\t$err = $this->oController->update($this->oi' + name.capitalize() + ');\n')
+    file.write('\t\tif($err->hasErrors())\n')
+    file.write('\t\t\t$err->sendError();\n')
+    file.write('\t\telse\n')
+    file.write('\t\t\t$this->http->sendResponse(CREATED, $this->http->messageToJSON("Updated correctly"));\n')
+    file.write('\t}\n\n')
+    file.write('\tpublic function deleteById($params) {\n')
+    file.write('\t\t$this->oi' + name.capitalize() + '->setPKValue($params[0]);\n')
+    file.write('\t\t$err = $this->oController->delete($this->oi' + name.capitalize() + ');\n')
+    file.write('\t\tif($err->hasErrors())\n')
+    file.write('\t\t\t$err->sendError();\n')
+    file.write('\t\telse\n')
+    file.write('\t\t\t$this->http->sendResponse(CREATED, $this->http->messageToJSON("Deleted correctly"));\n')
     file.write('\t}\n')
     file.write('}\n')
     file.write('?>')
     file.close()
+    numLines = len(open('./config/model-declarations.php', "r").readlines())
+    newFile = ""
+    file = open('./config/model-declarations.php', "r")
+    counter = 1
+    for line in file:
+        if numLines == counter+1:
+            newFile += 'require_once("./server/api-models/APIModel' + name.capitalize() + '.php");\n'
+        newFile += line
+        counter = counter + 1
+    file.close
+    file = open('./config/model-declarations.php', "w")
+    file.write(newFile)
+    file.close()
+
 
 command = ""
 while command != "exit":
@@ -121,7 +156,7 @@ while command != "exit":
             elif fileType == "config" or fileType == "-c":
                 arg = keyWord[3]
                 if len(arg) > 0:
-                    createConfigTable(arg)
+                    print("Obsolete command")
                 else:
                     print("Invalid command")
             elif fileType == "all" or fileType == "-a":

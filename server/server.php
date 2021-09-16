@@ -4,6 +4,8 @@ use backint\core\ErrObj;
 use backint\server\handler;
 use backint\core\http;
 use backint\core\Auth;
+error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+session_start();
 require_once("./core/http.php");
 require_once("./core/ErrObj.php");
 require_once("./server/handler.php");
@@ -21,7 +23,6 @@ foreach (ALLOWED_METHODS as $key => $value) {
 header("Access-Control-Allow-Methods: ".$allowedMethodsString);
 header("Access-Control-Allow-Headers: ".ALLOWED_HEADERS);
 header("Content-Type: application/json; charset=".DEFAULT_CHARSET);
-session_start();
 class server{
     private $method;
     private $requestBody;
@@ -41,6 +42,11 @@ class server{
 
     public function serve($route, $apiKey) {
         $auth = new Auth();
+        if(!array_key_exists("PHP_AUTH_USER", $_SERVER) || !array_key_exists("PHP_AUTH_PW", $_SERVER))
+        {
+            $_SERVER['PHP_AUTH_USER'] = "";
+            $_SERVER['PHP_AUTH_PW'] = "";
+        }
         if($apiKey == API_KEY && $auth->checkCredentials($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $this->method)) {
             $isValidMethod = false;
             foreach (ALLOWED_METHODS as $key => $value) {
@@ -61,7 +67,7 @@ class server{
             if($this->method == 'OPTIONS')
             {
                 $http = new http();
-                $http->sendResponse(OK, $http->messageJSON("API is working!!"));
+                $http->sendResponse(OK, $http->messageToJSON("API is working!!"));
             } else {
                 $err = new ErrObj("You do not have authorized to use this API.", UNAUTHORIZED);
                 $err->sendError();

@@ -4,43 +4,96 @@ require_once("./core/IField.php");
 require_once("./config/config.php");
 use backint\core\IField;
 class OInterface {
-    private $DBTableName;
-    private $columnNameFromIdTable;
-    private $configurationTable;
-    private $idObject = 0;
-    public $objectFields;
+    /**
+     * Table name
+     * 
+     * @var string
+     */
+    private $tableName;
 
-    public function __construct($DBTableName, $columnNameFromIdTable) {
-        $this->objectFields = array();
-        $this->DBTableName = $DBTableName;
-        $this->columnNameFromIdTable = $columnNameFromIdTable;
-        $this->configurationTable = TABLE_CONFIG_PREFIX."_".$DBTableName;
+    /**
+     * Primary Key field name
+     * 
+     * @var string
+     */
+    private $pkFieldName;
+
+    /**
+     * Primary key value
+     * 
+     * @var int
+     */
+    private $pkValue = 0;
+
+    /**
+     * Fields from the table. Array assoc with column name as key.
+     * 
+     * @var array assoc
+     */
+    public $fields;
+
+    /**
+     * Constructor
+     * 
+     * @param string $tableName
+     * 
+     * @param string $pkFieldName primary key field name
+     */
+    public function __construct($tableName, $pkFieldName) {
+        $this->fields = array();
+        $this->tableName = $tableName;
+        $this->pkFieldName = $pkFieldName;
     }
 
-    public function addField($DBColumnName, $sqlFormat) {
-        $iField = new IField($DBColumnName, $sqlFormat);
-        $this->objectFields[$DBColumnName] = $iField;
+    /**
+     * Add a new field to OInterface object
+     * 
+     * @param string $columnName
+     * 
+     * @param string $sqlFormat
+     * 
+     * @return IField
+     */
+    public function addField($columnName, $sqlFormat) {
+        $iField = new IField($columnName, $sqlFormat);
+        $this->fields[$columnName] = $iField;
         return $iField;
     }
 
-    public function getDBTableName() {
-        return $this->DBTableName;
+    /**
+     * Get the table name
+     * 
+     * @return string
+     */
+    public function getTableName() {
+        return $this->tableName;
     }
 
-    public function getColumnNameFromIdTable() {
-        return $this->columnNameFromIdTable;
+    /**
+     * Get primary key field name
+     * 
+     * @return string
+     */
+    public function getPKFieldName() {
+        return $this->pkFieldName;
     }
 
-    public function getConfigurationTable() {
-        return $this->configurationTable;
+    /**
+     * Get Id
+     * 
+     * @return int
+     */
+    public function getPKValue() {
+        return $this->pkValue;
     }
 
-    public function getIdObject() {
-        return $this->idObject;
-    }
-
-    public function setIdObject($id) {
-        $this->idObject = $id;
+    /**
+     * Set Id
+     * 
+     * @param int
+     */
+    public function setPKValue($id) {
+        $this->pkValue = $id;
     }
 }
 ?>

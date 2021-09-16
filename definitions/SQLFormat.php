@@ -18,6 +18,8 @@
     define("DECIMAL", "1");
     define("DATE", "2");
 
+    define("JSON", "4");
+
     define("SQL_FORMAT", array(
         0 => true,
         1 => false,

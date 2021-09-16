@@ -1,28 +1,62 @@
 <?php
 namespace backint\core;
+use backint\core\ErrObj;
 require_once("./core/ErrObj.php");
-require_once("./config/config.php");
 require_once("./definitions/HTTP.php");
-use Mysqli;
+use Mysqli, Exception, PDOException;
+
 class DBObj {
     private $connection;
 
+    /**
+     * Connect to DB. Initialize a MySQLi Object
+     */
     public function __construct() {
-        $this->connection = new mysqli(HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE);
+        try {
+            $this->connection = new mysqli(HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE);
+        } catch (Exception  $th) {
+            $err = new ErrObj("Fatal error on server. ".$th->getMessage()
+                ." Linea: ".$th->getLine()
+                ." Archivo: ".$th->getFile(), INTERNAL_SERVER_ERROR);
+            $err->sendError();
+            die();
+        }
     }
 
+    /**
+     * Execute a MySql query and get a mysqli_result object. Use it with a fetch_assoc() function.
+     * 
+     * @param string $query
+     * 
+     * @return mysqli_result
+     */
     public function getFetchAssoc($query) {
-        if($result = mysqli_query($this->connection, $query)) {
-            mysqli_close($this->connection);
-            return $result;
-        }
-        else {
-            mysqli_close($this->connection);
-            return null;
+        try {
+            if($result = mysqli_query($this->connection, $query)) {
+                mysqli_close($this->connection);
+                return $result;
+            }
+            else {
+                mysqli_close($this->connection);
+                return null;
+            }
+        } catch (PDOException $th) {
+            $err = new ErrObj("Fatal error on server. ".$th->getMessage()
+                ." Linea: ".$th->getLine()
+                ." Archivo: ".$th->getFile(), INTERNAL_SERVER_ERROR);
+            $err->sendError();
+            die();
         }
     }
 
-    public function doQuery($query) {
+    /**
+     * Execute a MySql query.
+     * 
+     * @param string $query
+     * 
+     * @return ErrObj
+     */
+    public function doQuery($query): ErrObj {
         if($result = mysqli_query($this->connection, $query)) {
             mysqli_close($this->connection);
             return new ErrObj("", CREATED);

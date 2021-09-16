@@ -4,49 +4,8 @@ require_once("./definitions/SQLFormat.php");
 /* FOLDER CONFIGURATION */
 define("ROUTE_INDEX", "backint/");
 
-/* CONFIGURATION HELPER FRAMEWORK CONFIGURATION */
-define("TABLE_CONFIG_PREFIX", "conf");
-define("ROUTE_CONFIG", "config");
-define("TABLE_CONFIG_STRUCTURE", array(
-    array(
-        "name" => "fieldName",
-        "type" => VARCHAR,
-        "size" => "(50)"
-    ),
-    array(
-        "name" => "label_es",
-        "type" => VARCHAR,
-        "size" => "(50)"
-    ),
-    array(
-        "name" => "label_en",
-        "type" => VARCHAR,
-        "size" => "(50)"
-    ),
-    array(
-        "name" => "type",
-        "type" => VARCHAR,
-        "size" => "(20)"
-    ),
-    array(
-        "name" => "required",
-        "type" => BOOLEAN,
-        "size" => ""
-    ),
-    array(
-        "name" => "visible",
-        "type" => BOOLEAN,
-        "size" => ""
-    ),
-    array(
-        "name" => "enabled",
-        "type" => BOOLEAN,
-        "size" => ""
-    )
-));
-
 /* DATABASE CONFIGURATION */
-define("DATABASE", "backint");
+define("DATABASE", "vestimenta");
 define("HOST", "localhost");
 define("DATABASE_USER", "root");
 define("DATABASE_PASSWORD", "");

@@ -3,120 +3,160 @@ namespace backint\core;
 require_once("./definitions/HTTP.php");
 require_once("./core/DBObj.php");
 require_once("./core/OInterface.php");
+require_once("./core/ErrObj.php");
+require_once("./core/http.php");
+use backint\core\Http;
 use backint\core\DBObj;
+use backint\core\ErrObj;
 use backint\core\OInterface;
+use Exception;
+
 class OController {
 
+    /**
+     * Constructor
+     */
     public function __construct() {
 
     }
 
-    public function register($objInterface) {
-        $dbObject = new DBObj();
-        $sqlQuery = "INSERT INTO ".$objInterface->getDBTableName()." (";
-        $sqlValues = "(";
-        $index = 0;
-        foreach ($objInterface->objectFields as $key => $value) {
-            if($index > 0)
-            {
-                $sqlQuery .= ",";
-                $sqlValues .= ",";
+    /**
+     * Make an insert into a table
+     * 
+     * @param OInterface $objInterface
+     * 
+     * @return ErrObj
+     */
+    public function insert($objInterface) {
+        try {
+            $dbObject = new DBObj();
+            $sqlQuery = "INSERT INTO ".$objInterface->getTableName()." (";
+            $sqlValues = "(";
+            $index = 0;
+            foreach ($objInterface->fields as $key => $value) {
+                if($index > 0)
+                {
+                    $sqlQuery .= ",";
+                    $sqlValues .= ",";
+                }
+                $columnName = $key;
+                $fieldValue = $value->fieldValue;
+                $sqlQuery .= $columnName;
+                if($fieldValue == "")
+                    $fieldValue = "null";
+                if(SQL_FORMAT[$value->getFormat()] && $fieldValue != "null")
+                    $sqlValues .= "'".$fieldValue."'";
+                else
+                    $sqlValues .= $fieldValue;
+                $index++;
             }
-            $columnName = $value->getColumnName();
-            $fieldValue = $value->fieldValue;
-            $sqlQuery .= $columnName;
-            if($fieldValue == "")
-                $fieldValue = "null";
-            if(SQL_FORMAT[$value->getDBFormat()] && $fieldValue != "null")
-                $sqlValues .= "'".$fieldValue."'";
-            else
-                $sqlValues .= $fieldValue;
-            $index++;
+            $sqlQuery .= ")";
+            $sqlValues .= ");";
+            $sqlQuery .= " VALUES ".$sqlValues;
+            $err = $dbObject->doQuery($sqlQuery);
+        } catch (Exception $ex) {
+            $err = new ErrObj($ex, Http::$HTTP_CONFILCT);
         }
-        $sqlQuery .= ")";
-        $sqlValues .= ");";
-        $sqlQuery .= " VALUES ".$sqlValues;
-        $err = $dbObject->doQuery($sqlQuery);
         return $err;
     }
 
+    /**
+     * Make a delete in a table using a OInterface with an PK Id previously set
+     * 
+     * @param OInterface $objInterface
+     * 
+     * @return ErrObj
+     */
     public function delete($objInterface) {
-        $dbObject = new DBObj();
-        $sqlQuery = "DELETE FROM ".$objInterface->getDBTableName()." WHERE ".$objInterface->getColumnNameFromIdTable()." = ".$objInterface->getIdObject();
-        $err = $dbObject->doQuery($sqlQuery);
-        return $err;
-    }
-
-    public function put($objInterface) {
-        $dbObject = new DBObj();
-        $sqlQuery = "UPDATE ".$objInterface->getDBTableName()." SET ";
-        $index = 0;
-        foreach ($objInterface->objectFields as $key => $value) {
-            if($index > 0)
-            {
-                $sqlQuery .= ",";
-            }
-            $columnName = $value->getColumnName();
-            $fieldValue = $value->fieldValue;
-            $sqlQuery .= $columnName." = ";
-            if($fieldValue == "")
-                $fieldValue = "null";
-            if(SQL_FORMAT[$value->getDBFormat()] && $fieldValue != "null")
-                $sqlQuery .= "'".$fieldValue."'";
-            else
-                $sqlQuery .= $fieldValue;
-            $index++;
+        try {
+            $dbObject = new DBObj();
+            $sqlQuery = "DELETE FROM ".$objInterface->getTableName()." WHERE ".$objInterface->getPKFieldName()." = ".$objInterface->getPKValue();
+            $err = $dbObject->doQuery($sqlQuery);
+        } catch (Exception $ex) {
+            $err = new ErrObj($ex, Http::$HTTP_CONFILCT);
         }
-        $sqlQuery .= " WHERE ".$objInterface->getColumnNameFromIdTable()." = ".$objInterface->getIdObject().";";
-        $err = $dbObject->doQuery($sqlQuery);
         return $err;
     }
 
-    public function get() {
-        if(func_num_args() == 2)
-            return $this->getSimple(func_get_args()[0], func_get_args()[1]);
-        elseif(func_num_args() == 3)
-            return $this->getWithFilter(func_get_args()[0], func_get_args()[1], func_get_args()[2]);
-        elseif(func_num_args() == 4)
-            return $this->getWithFilterAndSort(func_get_args()[0], func_get_args()[1], func_get_args()[2], func_get_args()[3]);
+    /**
+     * Update a record from Database using an OInterface as new values
+     * 
+     * @param OInterface
+     * 
+     * @return ErrObj
+     */
+    public function update($objInterface) {
+        try {
+            $dbObject = new DBObj();
+            $sqlQuery = "UPDATE ".$objInterface->getDBTableName()." SET ";
+            $index = 0;
+            foreach ($objInterface->fields as $key => $value) {
+                if($index > 0)
+                {
+                    $sqlQuery .= ",";
+                }
+                $columnName = $key;
+                $fieldValue = $value->value;
+                $sqlQuery .= $columnName." = ";
+                if($fieldValue == "")
+                    $fieldValue = "null";
+                if(SQL_FORMAT[$value->getFormat()] && $fieldValue != "null")
+                    $sqlQuery .= "'".$fieldValue."'";
+                else
+                    $sqlQuery .= $fieldValue;
+                $index++;
+            }
+            $sqlQuery .= " WHERE ".$objInterface->getPKFieldName()." = ".$objInterface->getPKValue().";";
+            $err = $dbObject->doQuery($sqlQuery);
+        } catch (Exception $ex) {
+            $err = new ErrObj($ex, Http::$HTTP_CONFILCT);
+        }
+        return $err;
     }
 
-    private function getSimple($id, $objInterface) {
+    /**
+     * Make a select and bring just one record
+     * 
+     * @param OInterface $objInterface
+     * 
+     * @param SQLControllerHandler $handlers
+     * 
+     * @return OInterface
+     * 
+     * @return null
+     */
+    public function selectSimple($objInterface, $handlers) {
         $dbObject = new DBObj();
-        $sqlQuery = "SELECT * FROM ".$objInterface->getDBTableName()." WHERE ".$objInterface->getColumnNameFromIdTable()." = ".$id.";";
+        $sqlQuery = "SELECT * FROM ".$objInterface->getTableName().""
+            .$handlers->getControllerFilter()->getFilter()
+            .$handlers->getControllerOrder()->getSort()." LIMIT 1;";
         $doFetch = $dbObject->getFetchAssoc($sqlQuery);
         return $this->fillObject($doFetch, $objInterface);
     }
 
-    private function getWithFilter($id, $objInterface, $filter) {
-        $dbObject = new DBObj();
-        $sqlQuery = "SELECT * FROM ".$objInterface->getDBTableName()." WHERE ".$objInterface->getColumnNameFromIdTable()." = ".$id." ";
-        $sqlQuery .= $filter->getFilter().";";
-        $doFetch = $dbObject->getFetchAssoc($sqlQuery);
-        return $this->fillObject($doFetch, $objInterface);
-    }
-
-    private function getWithFilterAndSort($id, $objInterface, $filter, $sort) {
-        $dbObject = new DBObj();
-        $sqlQuery = "SELECT * FROM ".$objInterface->getDBTableName()." WHERE ".$objInterface->getColumnNameFromIdTable()." = ".$id." ";
-        $sqlQuery .= $filter->getFilter()." ";
-        $sqlQuery .= $sort->getFilter().";";
-        $doFetch = $dbObject->getFetchAssoc($sqlQuery);
-        return $this->fillObject($doFetch, $objInterface);
-    }
-
+    /**
+     * Fill an OInterface using a MySQLi result object
+     * 
+     * @param mysqli_result $doFetch
+     *  
+     * @param OInterface $objInterface
+     * 
+     * @return OInterface
+     * 
+     * @return null
+     */
     private function fillObject($doFetch, $objInterface) {
         if($doFetch != null)
         {
             while($row = $doFetch->fetch_assoc())
             {
-                $objInterface->setIdObject($row[$objInterface->getColumnNameFromIdTable()]);
-                foreach ($objInterface->objectFields as $key => $value) {
+                $objInterface->setPKValue($row[$objInterface->getPKFieldName()]);
+                foreach ($objInterface->fields as $key => $value) {
                     $columnName = $value->getColumnName();
                     if($row[$columnName] != "")
-                        $objInterface->objectFields[$columnName]->fieldValue = $row[$columnName];
+                        $objInterface->fields[$columnName]->value = $row[$columnName];
                     else
-                        $objInterface->objectFields[$columnName]->fieldValue = "null";
+                        $objInterface->fields[$columnName]->value = "null";
                 }
             }
         }
@@ -127,18 +167,37 @@ class OController {
         return $objInterface;
     }
 
-    public function getArray() {
-        if(func_num_args() == 3)
-            return $this->getArrayForeignKey(func_get_args()[0], func_get_args()[1], func_get_args()[2]);
-    }
-
-    private function getArrayForeignKey(int $foreignId, string $foreignField, OInterface $objInterface) {
+    /**
+     * Make a select and bring all records using handlers to filter
+     * 
+     * @param OInterface $objInterface
+     * 
+     * @param SQLControllerHandler $handlers
+     * 
+     * @return array OInterface
+     * 
+     * @return null
+     */
+    public function selectMultiple($objInterface, $handlers) {
         $dbObject = new DBObj();
-        $sqlQuery = "SELECT * FROM ".$objInterface->getDBTableName()." WHERE ".$foreignField." = ".$foreignId.";";
+        $sqlQuery = "SELECT * FROM ".$objInterface->getTableName().""
+            .$handlers->getControllerFilter()->getFilter()
+            .$handlers->getControllerOrder()->getSort().";";
         $doFetch = $dbObject->getFetchAssoc($sqlQuery);
         return $this->fillObjects($doFetch, $objInterface);
     }
 
+    /**
+     * Fill an OInterface array using a MySQLi result object
+     * 
+     * @param mysqli_result $doFetch
+     *  
+     * @param OInterface $objInterface
+     * 
+     * @return array OInterface
+     * 
+     * @return null
+     */
     private function fillObjects($doFetch, $objInterface) {
         $objectIndex = 0;
         $interfaceObjects = array();
@@ -147,18 +206,18 @@ class OController {
             while($row = $doFetch->fetch_assoc())
             {
                 $fieldObjects = array();
-                $objInterface->setIdObject($row[$objInterface->getColumnNameFromIdTable()]);
-                foreach ($objInterface->objectFields as $key => $value) { //Tal vez crear otro objeto field para que se clone
+                $objInterface->setPKValue($row[$objInterface->getPKFieldName()]);
+                foreach ($objInterface->fields as $key => $value) {
                     $columnName = $value->getColumnName();
                     
                     if($row[$columnName] != "")
-                        $objInterface->objectFields[$columnName]->fieldValue = $row[$columnName];
+                        $objInterface->fields[$columnName]->value = $row[$columnName];
                     else
-                        $objInterface->objectFields[$columnName]->fieldValue = "null";
-                    $new[$columnName] = clone $objInterface->objectFields[$columnName];
+                        $objInterface->fields[$columnName]->value = "null";
+                    $new[$columnName] = clone $objInterface->fields[$columnName];
                 }
                 $interfaceObjects[$objectIndex] = clone $objInterface;
-                $interfaceObjects[$objectIndex]->objectFields = $new;
+                $interfaceObjects[$objectIndex]->fields = $new;
                 $objectIndex++;
             }
         }
