@@ -58,7 +58,7 @@ Create a new inferface object using an argument
 > itk -g -i arg
 Create a MySQL sentence to create a configuration table using an argument and `TABLE_CONFIG_STRUCTURE` configuration
 > itk -g -c arg
-Create a api model and a interface model using an argument
+Create a api model and an interface model using an argument
 > itk -g -a arg
 Create getters and setters using an Interface Object by a name pased by argument
 > itk -a arg

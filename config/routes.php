@@ -25,5 +25,29 @@ define("ROUTES", array(
         "class" => "APIModelTest",
         "function" => "deleteById"
     ),
+    array(
+        "route" => "testing",
+        "type" => "POST",
+        "class" => "APIModelTesting",
+        "function" => "create"
+    ),
+    array(
+        "route" => "testing",
+        "type" => "PUT",
+        "class" => "APIModelTesting",
+        "function" => "update"
+    ),
+    array(
+        "route" => "testing",
+        "type" => "GET",
+        "class" => "APIModelTesting",
+        "function" => "getById"
+    ),
+    array(
+        "route" => "testing",
+        "type" => "DELETE",
+        "class" => "APIModelTesting",
+        "function" => "deleteById"
+    ),
 ));
 ?>
