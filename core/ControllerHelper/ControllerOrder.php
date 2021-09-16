@@ -57,7 +57,9 @@ class ControllerOrder {
      * @return string MySQL order query
      */
     public function getSort() {
-        $orderBy = " ORDER BY ".$this->sorting." ".$this->typeOrder;
+        $orderBy = "";
+        if(strlen($this->sorting) > 0)
+            $orderBy = " ORDER BY ".$this->sorting." ".$this->typeOrder;
         return $orderBy;
     }
 

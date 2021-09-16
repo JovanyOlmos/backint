@@ -26,7 +26,7 @@ define("API_KEY", "1_6+n!@ST1C@3Kpr11nk7");
 define("DEFAULT_CHARSET", "UTF-8");
 
 /* AUTH */
-define("AUTH_ACTIVE", true);
+define("AUTH_ACTIVE", false);
 define("READ", "1");
 define("WRITE", "2");
 define("DELETE", "3");

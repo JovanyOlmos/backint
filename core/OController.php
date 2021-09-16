@@ -40,7 +40,7 @@ class OController {
                     $sqlValues .= ",";
                 }
                 $columnName = $key;
-                $fieldValue = $value->fieldValue;
+                $fieldValue = $value->value;
                 $sqlQuery .= $columnName;
                 if($fieldValue == "")
                     $fieldValue = "null";
@@ -88,7 +88,7 @@ class OController {
     public function update($objInterface) {
         try {
             $dbObject = new DBObj();
-            $sqlQuery = "UPDATE ".$objInterface->getDBTableName()." SET ";
+            $sqlQuery = "UPDATE ".$objInterface->getTableName()." SET ";
             $index = 0;
             foreach ($objInterface->fields as $key => $value) {
                 if($index > 0)
