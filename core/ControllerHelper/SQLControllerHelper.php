@@ -2,8 +2,10 @@
 namespace backint\core\ControllerHelper;
 require_once("./core/ControllerHelper/ControllerFilter.php");
 require_once("./core/ControllerHelper/ControllerOrder.php");
+require_once("./core/ControllerHelper/ControllerUnion.php");
 use backint\core\ControllerHelper\ControllerOrder;
 use backint\core\ControllerHelper\ControllerFilter;
+use backint\core\ControllerHelper\ControllerUnion;
 
 class SQLControllerHelper {
     /**
@@ -19,6 +21,13 @@ class SQLControllerHelper {
      * @var ControllerOrder
      */
     private $controllerOrder;
+
+    /**
+     * Union object
+     * 
+     * @var ControllerUnion
+     */
+    private $controllerUnion;
 
     /**
      * Constructor
@@ -66,6 +75,28 @@ class SQLControllerHelper {
      */
     public function setControllerOrder($controllerOrder) {
         $this->controllerOrder = $controllerOrder;
+    }
+
+    /**
+     * Set controller union object
+     * 
+     * @param ControllerUnion
+     * 
+     * @return void
+     */
+    public function setControllerUnion($controllerUnion) {
+        $this->controllerUnion = $controllerUnion;
+    }
+
+    /**
+     * Get controller union object
+     * 
+     * @param ControllerUnion
+     * 
+     * @return void
+     */
+    public function getControllerUnion() {
+        return $this->controllerUnion;
     }
 }
 ?>
