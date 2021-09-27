@@ -49,7 +49,7 @@ class server{
         }
         if($apiKey == API_KEY && $auth->checkCredentials($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $this->method)) {
             $isValidMethod = false;
-            foreach (ALLOWED_METHODS as $key => $value) {
+            foreach (ALLOWED_METHODS as $value) {
                 if($value == $this->method)
                     $isValidMethod = true;
             }

@@ -1,7 +1,6 @@
 <?php
 namespace backint\server;
 use backint\server\router;
-use backint\core\http;
 use backint\core\ErrObj;
 
 require_once("./definitions/HTTP.php");
@@ -33,10 +32,10 @@ class handler{
             $index++;
         }
         try {
-            foreach (ROUTES as $key => $value) {
+            foreach (ROUTES as $value) {
                 if($value["route"] == $mainRoute && $value["type"] == $method)
                 {
-                    $router = new router($value, $params, $requestBody);
+                    new router($value, $params, $requestBody);
                     die();
                 }
             }

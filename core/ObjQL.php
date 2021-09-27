@@ -144,7 +144,7 @@ class ObjQL {
                     $jsonFields .= ',';
                 $firstField = 0;
                 $jsonFields .= '{';
-                foreach ($this->fields as $field => $fieldName) {
+                foreach ($this->fields as $fieldName) {
                     if($firstField > 0)
                         $jsonFields .= ',';
                     if($fieldName[1] != JSON)

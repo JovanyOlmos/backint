@@ -13,7 +13,7 @@ class DBObj {
      */
     public function __construct() {
         try {
-            $this->connection = new mysqli(HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE);
+            $this->connection = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
         } catch (Exception  $th) {
             $err = new ErrObj("Fatal error on server. ".$th->getMessage()
                 ." Linea: ".$th->getLine()
@@ -45,6 +45,7 @@ class DBObj {
                 ." Linea: ".$th->getLine()
                 ." Archivo: ".$th->getFile(), INTERNAL_SERVER_ERROR);
             $err->sendError();
+            mysqli_close($this->connection);
             die();
         }
     }

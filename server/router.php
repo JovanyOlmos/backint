@@ -5,7 +5,6 @@ use backint\core\ErrObj;
 require_once("./config/config.php");
 require_once("./config/routes.php");
 require_once("./core/ErrObj.php");
-require_once("./config/model-declarations.php");
 
 class router{
     /**
@@ -20,6 +19,7 @@ class router{
      */
     public function __construct($action, $params, $requestBody) {
         try {
+            require_once("./server/api-models/".$action["class"].".php");
             $className = "backint\server\api\\";
             $className .= $action["class"];
             $functionName = $action["function"];

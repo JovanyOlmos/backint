@@ -38,16 +38,20 @@ class UpdateEngine {
                         if(mysqli_query($connection, $object->script())) {
                             if(mysqli_query($connection, "UPDATE update_logs SET log_version = ".$object->version()." WHERE log_name = '".str_replace("\\", "", get_class($object))."';")) {
                                 $this->addLogMessage("Update '".get_class($object)."' applied successfuly");
+                                mysqli_close($connection);
                                 return;
                             }
                             $this->addLogMessage("Update '".get_class($object)."' ran out correctly, but its version couldn't be updated.", true);
+                            mysqli_close($connection);
                             return;
                         }
                         $this->addLogMessage("Update failed while running '".get_class($object)."' script =>\n"
                             .$object->script(), true);
+                        mysqli_close($connection);
                         die();
                     }
                     $this->addLogMessage("Update doesn't need to be run");
+                    mysqli_close($connection);
                     return;
                 }
                 $this->addLogMessage("Update log not found in binnacle... Creating log...");
@@ -69,6 +73,7 @@ class UpdateEngine {
                     return;
                 }
                 $this->addLogMessage("Error to create update log", true);
+                mysqli_close($connection);
                 die();
             }
         } else {
@@ -84,6 +89,7 @@ class UpdateEngine {
                 return;
             } else {
                 $this->addLogMessage("Error on creating binnacle process", true);
+                mysqli_close($connection);
                 die();
             }
         }
@@ -99,7 +105,7 @@ class UpdateEngine {
     private function addLogMessage($message, $isError = false) {
         if($isError)
             fwrite($this->file, "[ERROR] ".date("H:i:s").": ".$message."\n");
-        Fwrite($this->file, "[INFO] ".date("H:i:s").": ".$message."\n");
+        fwrite($this->file, "[INFO] ".date("H:i:s").": ".$message."\n");
     }
 }
 ?>

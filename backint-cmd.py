@@ -117,19 +117,6 @@ def createModelObject(name):
     file.write('}\n')
     file.write('?>')
     file.close()
-    numLines = len(open('./config/model-declarations.php', "r").readlines())
-    newFile = ""
-    file = open('./config/model-declarations.php', "r")
-    counter = 1
-    for line in file:
-        if numLines == counter+1:
-            newFile += 'require_once("./server/api-models/APIModel' + name.capitalize() + '.php");\n'
-        newFile += line
-        counter = counter + 1
-    file.close
-    file = open('./config/model-declarations.php', "w")
-    file.write(newFile)
-    file.close()
 
 
 command = ""
@@ -153,12 +140,6 @@ while command != "exit":
                     createModelObject(arg)
                 else:
                     print("Invalid command")
-            elif fileType == "config" or fileType == "-c":
-                arg = keyWord[3]
-                if len(arg) > 0:
-                    print("Obsolete command")
-                else:
-                    print("Invalid command")
             elif fileType == "all" or fileType == "-a":
                 arg = keyWord[3]
                 if len(arg) > 0:
@@ -171,7 +152,6 @@ while command != "exit":
                 print("\nYou can choose these next options: \n\n")
                 print("\tinterface [arg] | -i [arg] -> to generate an Interface object file\n\n")
                 print("\tmodel [arg] | -m [arg] -> to generate an API Model object file\n\n")
-                print("\tconfig [arg] | -c [arg] -> to generate a MySQL sentence with table's config of an object\n\n")
                 print("\tall [arg] | -a [arg] -> to generate both API Model and Interface object\n\n")
                 print("You can type also 'exit' to get out.\n")
             else:
