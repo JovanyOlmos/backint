@@ -39,8 +39,7 @@ class ErrObj {
     public function hasErrors(): bool {
         if($this->message != "")
             return true;
-        else
-            return false;
+        return false;
     }
 
     /**

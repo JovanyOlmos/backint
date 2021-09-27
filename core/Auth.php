@@ -25,7 +25,7 @@ class Auth {
      */
     public function checkCredentials($user, $pass, $method) {
         if(AUTH_ACTIVE) {
-            foreach (AUTH as $key => $value) {
+            foreach (AUTH as $value) {
                 if($value["username"] == $user && $value["password"] == $pass && $this->validLevel($method, $value["level"])) {
                     return true;
                 }

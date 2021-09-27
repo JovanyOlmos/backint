@@ -5,8 +5,8 @@ require_once("./definitions/SQLFormat.php");
 define("ROUTE_INDEX", "backint/");
 
 /* DATABASE CONFIGURATION */
-define("DATABASE", "vestimenta");
-define("HOST", "localhost");
+define("DATABASE_NAME", "vestimenta");
+define("DATABASE_HOST", "localhost");
 define("DATABASE_USER", "root");
 define("DATABASE_PASSWORD", "");
 

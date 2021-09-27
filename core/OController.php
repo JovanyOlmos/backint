@@ -4,8 +4,6 @@ require_once("./definitions/HTTP.php");
 require_once("./core/DBObj.php");
 require_once("./core/OInterface.php");
 require_once("./core/ErrObj.php");
-require_once("./core/http.php");
-use backint\core\Http;
 use backint\core\DBObj;
 use backint\core\ErrObj;
 use backint\core\OInterface;
@@ -55,7 +53,7 @@ class OController {
             $sqlQuery .= " VALUES ".$sqlValues;
             $err = $dbObject->doQuery($sqlQuery);
         } catch (Exception $ex) {
-            $err = new ErrObj($ex, Http::$HTTP_CONFILCT);
+            $err = new ErrObj($ex, CONFILCT);
         }
         return $err;
     }
@@ -73,7 +71,7 @@ class OController {
             $sqlQuery = "DELETE FROM ".$objInterface->getTableName()." WHERE ".$objInterface->getPKFieldName()." = ".$objInterface->getPKValue();
             $err = $dbObject->doQuery($sqlQuery);
         } catch (Exception $ex) {
-            $err = new ErrObj($ex, Http::$HTTP_CONFILCT);
+            $err = new ErrObj($ex, CONFILCT);
         }
         return $err;
     }
@@ -109,7 +107,7 @@ class OController {
             $sqlQuery .= " WHERE ".$objInterface->getPKFieldName()." = ".$objInterface->getPKValue().";";
             $err = $dbObject->doQuery($sqlQuery);
         } catch (Exception $ex) {
-            $err = new ErrObj($ex, Http::$HTTP_CONFILCT);
+            $err = new ErrObj($ex, CONFILCT);
         }
         return $err;
     }
@@ -151,7 +149,7 @@ class OController {
             while($row = $doFetch->fetch_assoc())
             {
                 $objInterface->setPKValue($row[$objInterface->getPKFieldName()]);
-                foreach ($objInterface->fields as $key => $value) {
+                foreach ($objInterface->fields as $value) {
                     $columnName = $value->getColumnName();
                     if($row[$columnName] != "")
                         $objInterface->fields[$columnName]->value = $row[$columnName];
@@ -205,9 +203,8 @@ class OController {
         {
             while($row = $doFetch->fetch_assoc())
             {
-                $fieldObjects = array();
                 $objInterface->setPKValue($row[$objInterface->getPKFieldName()]);
-                foreach ($objInterface->fields as $key => $value) {
+                foreach ($objInterface->fields as $value) {
                     $columnName = $value->getColumnName();
                     
                     if($row[$columnName] != "")
