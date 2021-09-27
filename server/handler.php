@@ -3,14 +3,12 @@ namespace backint\server;
 use backint\server\router;
 use backint\core\http;
 use backint\core\ErrObj;
-use backint\update\UpdateEngine;
 
 require_once("./definitions/HTTP.php");
 require_once("./server/router.php");
 require_once("./config/config.php");
 require_once("./core/ErrObj.php");
 require_once("./config/routes.php");
-require_once("./updates/Update-Engine.php");
 
 class handler{
 
@@ -35,11 +33,6 @@ class handler{
             $index++;
         }
         try {
-            if($mainRoute == "update-models") {
-                $updates = new UpdateEngine();
-                $updates->runUpdates();
-                die();
-            }
             foreach (ROUTES as $key => $value) {
                 if($value["route"] == $mainRoute && $value["type"] == $method)
                 {
