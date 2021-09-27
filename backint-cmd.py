@@ -32,8 +32,22 @@ def autocompleteGettersAndSetters(name):
     file = open('./interfaces/OI' + name.capitalize() + '.php', "w")
     file.write(newFile)
     file.close
-    
 
+def createUpdate(name):
+    file = open('./updates/updates/' + name.capitalize() + '.php', "w")
+    file.write('<?php\n')
+    file.write('namespace backint\\update;\n\n')
+    file.write('require_once(INSTALATION_PATH."backint/updates/IUpdate.php");\n\n')
+    file.write('class ' + name.capitalize() + ' extends IUpdate {\n')
+    file.write('\tpublic function script() {\n')
+    file.write('\t\treturn "";\n')
+    file.write('\t}\n\n')
+    file.write('\tpublic function version() {\n')
+    file.write('\t\treturn 1;\n')
+    file.write('\t}\n')
+    file.write('}\n')
+    file.write('?>')
+    
 def createInterfaceObject(name):
     file = open('./interfaces/OI' + name.capitalize() + '.php', "w")
     file.write('<?php\n')
@@ -140,6 +154,12 @@ while command != "exit":
                     createModelObject(arg)
                 else:
                     print("Invalid command")
+            elif fileType == "update" or fileType == "-u":
+                arg = keyWord[3]
+                if len(arg) > 0:
+                    createUpdate(arg)
+                else:
+                    print("Invalid command")
             elif fileType == "all" or fileType == "-a":
                 arg = keyWord[3]
                 if len(arg) > 0:
@@ -152,6 +172,7 @@ while command != "exit":
                 print("\nYou can choose these next options: \n\n")
                 print("\tinterface [arg] | -i [arg] -> to generate an Interface object file\n\n")
                 print("\tmodel [arg] | -m [arg] -> to generate an API Model object file\n\n")
+                print("\tupdate [arg] | -u [arg] -> to generate an Update object file\n\n")
                 print("\tall [arg] | -a [arg] -> to generate both API Model and Interface object\n\n")
                 print("You can type also 'exit' to get out.\n")
             else:
