@@ -295,4 +295,48 @@ $json = $this->objQL->getJSON("SELECT id, folio FROM fichas WHERE ".$params[0]."
 
 Notice this technology is on beta version yet. You can find some errors and some limitations. We are working on it!.
 
+### UPDATES
+"Updates" is a way to keep the model updated. It works using an "update engine" who checks each Update and
+try to apply in the database. This means you have not worry about miss a new change.
+Just create a new Update object for each change or changes group. This Update object has to implement abstract class IUpdate. Each update object have always diferent name... Obvious reasons. We're recommending name them
+like "UpdateYYYYMMDDHHmm" this way to name them could be useful.
+An Update object has two methods and we have an example for you... Watch below.
+
+```
+\\You have to write your MySQL script right here
+public function script() {
+    return "CREATE TABLE products (
+        id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(20)
+    );";
+}
+
+\\This means the update version. You have to init it always at 1
+\\If you make a change and you want to run it again, just increase by 1.
+public function version() {
+    return 1;
+}
+```
+
+How to run this?
+First you have to declare your computer path on config.php file (inside updates folder)
+Something like:
+
+```
+define("INSTALATION_PATH", "C:/xampp/htdocs/");
+define("UPDATE_DB_NAME", "yourdatabase");
+define("UPDATE_DB_HOST", "localhost");
+define("UPDATE_DB_USER", "root");
+define("UPDATE_DB_PASSWORD", "");
+```
+
+Once you have declared your values, you need to modify line 2 on run.php file. This time you need to specify where config.php is.
+
+```
+require_once("C:/xampp/htdocs/backint/updates/config.php");
+```
+
+Finally, just go to your php installation path and run `php C:\xampp\htdocs\backint\updates\run.php`. Or you can declare the path of php like global enviroment and run the code in any location.
+Note: Change the path according to your own path.
+
 Created by Interik Team!
