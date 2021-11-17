@@ -89,20 +89,22 @@ class OController {
             $sqlQuery = "UPDATE ".$objInterface->getTableName()." SET ";
             $index = 0;
             foreach ($objInterface->fields as $key => $value) {
-                if($index > 0)
-                {
-                    $sqlQuery .= ",";
+                if(!is_null($value->value) && $value->value != '') {
+                    if($index > 0)
+                    {
+                        $sqlQuery .= ",";
+                    }
+                    $columnName = $key;
+                    $fieldValue = $value->value;
+                    $sqlQuery .= $columnName." = ";
+                    if($fieldValue == "")
+                        $fieldValue = "null";
+                    if(SQL_FORMAT[$value->getFormat()] && $fieldValue != "null")
+                        $sqlQuery .= "'".$fieldValue."'";
+                    else
+                        $sqlQuery .= $fieldValue;
+                    $index++;
                 }
-                $columnName = $key;
-                $fieldValue = $value->value;
-                $sqlQuery .= $columnName." = ";
-                if($fieldValue == "")
-                    $fieldValue = "null";
-                if(SQL_FORMAT[$value->getFormat()] && $fieldValue != "null")
-                    $sqlQuery .= "'".$fieldValue."'";
-                else
-                    $sqlQuery .= $fieldValue;
-                $index++;
             }
             $sqlQuery .= " WHERE ".$objInterface->getPKFieldName()." = ".$objInterface->getPKValue().";";
             $err = $dbObject->doQuery($sqlQuery);

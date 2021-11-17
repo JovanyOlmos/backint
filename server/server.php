@@ -1,28 +1,35 @@
 <?php
 namespace backint\server;
+
 use backint\core\ErrObj;
 use backint\server\handler;
 use backint\core\http;
 use backint\core\Auth;
+
 error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 session_start();
+
 require_once("./core/http.php");
 require_once("./core/ErrObj.php");
 require_once("./server/handler.php");
 require_once("./definitions/HTTP.php");
 require_once("./config/config.php");
 require_once("./core/Auth.php");
-header("Access-Control-Allow-Origin: ".ALLOWED_ORIGINS);
+
 $allowedMethodsString = "";
 $index = 0;
 foreach (ALLOWED_METHODS as $key => $value) {
     if($index > 0)
         $allowedMethodsString .= ",";
     $allowedMethodsString .= $value;
+    $index++;
 }
+
+header("Access-Control-Allow-Origin: ".ALLOWED_ORIGINS);
 header("Access-Control-Allow-Methods: ".$allowedMethodsString);
 header("Access-Control-Allow-Headers: ".ALLOWED_HEADERS);
 header("Content-Type: application/json; charset=".DEFAULT_CHARSET);
+
 class server{
     private $method;
     private $requestBody;
@@ -32,15 +39,17 @@ class server{
         $this->method = $_SERVER['REQUEST_METHOD'];
         $json = file_get_contents("php://input");
         $apiKey = null;
-        foreach (getallheaders() as $nombre => $valor) {
+        if(array_key_exists("api-key", getallheaders()))
+            $apiKey = getallheaders()["api-key"];
+        /*foreach (getallheaders() as $nombre => $valor) {
             if($nombre == "api-key")
                 $apiKey = $valor;
-        }
+        }*/
         $this->requestBody = json_decode($json, true);
         $this->serve($route, $apiKey);
     }
 
-    public function serve($route, $apiKey) {
+    private function serve($route, $apiKey) {
         $auth = new Auth();
         if(!array_key_exists("PHP_AUTH_USER", $_SERVER) || !array_key_exists("PHP_AUTH_PW", $_SERVER))
         {

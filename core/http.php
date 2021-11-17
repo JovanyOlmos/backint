@@ -72,27 +72,28 @@ class Http {
     public function convertObjectToJSON($objInterface): string {
         $json = '{';
         $index = 0;
-        if($objInterface->getPKValue() > 0)
+        if($objInterface->getPKValue() > 0) {
             $json .= '"'.$objInterface->getPKFieldName().'": '.$objInterface->getPKValue().',';
-        foreach ($objInterface->fields as $key => $iField) {
-            if($index > 0)
-                $json .= ', ';
-            $json .= '"'.$key.'":';
-            if(SQL_FORMAT[$iField->getFormat()] && $iField->value != "null")
-                $json .= '"'.$iField->value.'"';
-            else
-            {
-                if($iField->getFormat() == BOOLEAN)
-                {
-                    if($iField->value)
-                        $json .= 'true';
-                    else
-                        $json .= 'false';
-                }
+            foreach ($objInterface->fields as $key => $iField) {
+                if($index > 0)
+                    $json .= ', ';
+                $json .= '"'.$key.'":';
+                if(SQL_FORMAT[$iField->getFormat()] && $iField->value != "null")
+                    $json .= '"'.$iField->value.'"';
                 else
-                    $json .= $iField->value.'';
+                {
+                    if($iField->getFormat() == BOOLEAN)
+                    {
+                        if($iField->value)
+                            $json .= 'true';
+                        else
+                            $json .= 'false';
+                    }
+                    else
+                        $json .= $iField->value.'';
+                }
+                $index++;
             }
-            $index++;
         }
         $json .= '}';
         return $json;

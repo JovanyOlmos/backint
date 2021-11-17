@@ -1,4 +1,6 @@
 import os
+import datetime
+import re
 
 def autocompleteGettersAndSetters(name):
     numLines = len(open('./interfaces/OI' + name.capitalize() + '.php', "r").readlines())
@@ -34,10 +36,10 @@ def autocompleteGettersAndSetters(name):
     file.close
 
 def createUpdate(name):
-    file = open('./updates/updates/' + name.capitalize() + '.php', "w")
+    file = open('./updates/updates/Update' + re.sub("-|:|\s|\.", "", str(datetime.datetime.now())) + '.php', "w")
     file.write('<?php\n')
     file.write('namespace backint\\update;\n\n')
-    file.write('require_once(INSTALATION_PATH."backint/updates/IUpdate.php");\n\n')
+    file.write('require_once(__DIR__."/../IUpdate.php");\n\n')
     file.write('class ' + name.capitalize() + ' extends IUpdate {\n')
     file.write('\tpublic function script() {\n')
     file.write('\t\treturn "";\n')

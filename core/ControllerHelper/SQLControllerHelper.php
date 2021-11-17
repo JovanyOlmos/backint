@@ -35,6 +35,7 @@ class SQLControllerHelper {
     public function __construct() {
         $this->controllerFilter = new ControllerFilter();
         $this->controllerOrder = new ControllerOrder();
+        $this->controllerUnion = new ControllerUnion();
     }
 
     /**

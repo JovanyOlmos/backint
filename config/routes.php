@@ -1,29 +1,14 @@
 <?php
-//Define your routes right here
+require_once("./config/path-definitions/get-routes.php");
+require_once("./config/path-definitions/delete-routes.php");
+require_once("./config/path-definitions/post-routes.php");
+require_once("./config/path-definitions/put-routes.php");
+require_once("./config/path-definitions/patch-routes.php");
 define("ROUTES", array(
-    array(
-        "route" => "test",
-        "type" => "POST",
-        "class" => "APIModelTest",
-        "function" => "create"
-    ),
-    array(
-        "route" => "test",
-        "type" => "PUT",
-        "class" => "APIModelTest",
-        "function" => "update"
-    ),
-    array(
-        "route" => "test",
-        "type" => "GET",
-        "class" => "APIModelTest",
-        "function" => "getById"
-    ),
-    array(
-        "route" => "test",
-        "type" => "DELETE",
-        "class" => "APIModelTest",
-        "function" => "deleteById"
-    ),
+    "PUT" => PUT_ROUTES,
+    "POST" => POST_ROUTES,
+    "GET" => GET_ROUTES,
+    "DELETE" => DELETE_ROUTES,
+    "PATCH" => PATCH_ROUTES,
 ));
 ?>

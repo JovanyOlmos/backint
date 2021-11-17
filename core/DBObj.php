@@ -3,10 +3,12 @@ namespace backint\core;
 use backint\core\ErrObj;
 require_once("./core/ErrObj.php");
 require_once("./definitions/HTTP.php");
-use Mysqli, Exception, PDOException;
+use Mysqli, Exception;
 
 class DBObj {
     private $connection;
+
+    private $num_records = 0;
 
     /**
      * Connect to DB. Initialize a MySQLi Object
@@ -33,6 +35,7 @@ class DBObj {
     public function getFetchAssoc($query) {
         try {
             if($result = mysqli_query($this->connection, $query)) {
+                $this->num_records = $result->num_rows;
                 mysqli_close($this->connection);
                 return $result;
             }
@@ -40,7 +43,7 @@ class DBObj {
                 mysqli_close($this->connection);
                 return null;
             }
-        } catch (PDOException $th) {
+        } catch (Exception $th) {
             $err = new ErrObj("Fatal error on server. ".$th->getMessage()
                 ." Linea: ".$th->getLine()
                 ." Archivo: ".$th->getFile(), INTERNAL_SERVER_ERROR);
@@ -67,6 +70,15 @@ class DBObj {
             mysqli_close($this->connection);
             return new ErrObj("".$err, CONFILCT);
         }
+    }
+
+    /**
+     * Get the number records from a SELECT query
+     * 
+     * @return int num of records
+     */
+    public function getNumRecords() {
+        return $this->num_records;
     }
 }
 ?>

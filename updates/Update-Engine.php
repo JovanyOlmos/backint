@@ -2,7 +2,7 @@
 namespace backint\update;
 
 use mysqli;
-foreach (glob(INSTALATION_PATH."backint/updates/updates/*.php") as $filename)
+foreach (glob(__DIR__."/updates/*.php") as $filename)
 {
     require_once($filename);
 }
@@ -11,7 +11,7 @@ class UpdateEngine {
     private $file;
 
     public function runUpdates() {
-        $this->file = fopen(INSTALATION_PATH."backint/updates/update/logs/".date("Y-m-d").str_replace(":", "-", date("H:i:s")).".log", "w");
+        $this->file = fopen(__DIR__."/logs/".date("Y-m-d").str_replace(":", "-", date("H:i:s")).".log", "w");
         foreach(get_declared_classes() as $class)
         {
             if(strpos($class, "backint\\update\\") !== false && strpos($class, "backint\\update\\IUpdate") === false) {

@@ -3,6 +3,7 @@ namespace backint\core;
 require_once("./core/IField.php");
 require_once("./config/config.php");
 use backint\core\IField;
+
 class OInterface {
     /**
      * Table name

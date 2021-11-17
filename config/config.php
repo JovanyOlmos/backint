@@ -25,8 +25,17 @@ define("API_KEY", "1_6+n!@ST1C@3Kpr11nk7");
 /* CHARSET */
 define("DEFAULT_CHARSET", "UTF-8");
 
-/* AUTH */
+/* BASIC AUTH */
 define("AUTH_ACTIVE", false);
+
+/**
+ * JWT Auth Config
+ */
+define("AUTH_JWT_ACTIVE", false);
+define("JWT_KEY", "J2IA;D.-id28=i926?s");
+define("JWT_ENCRYPT", "HS512");
+define("JWT_EXPIRED_MINUTES", 30);
+
 define("READ", "1");
 define("WRITE", "2");
 define("DELETE", "3");

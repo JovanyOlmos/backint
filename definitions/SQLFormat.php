@@ -17,6 +17,7 @@
     define("MEDIUMINT", "1");
     define("DECIMAL", "1");
     define("DATE", "2");
+    define("DEFAULT_VALUE", "1");
 
     define("JSON", "4");
 

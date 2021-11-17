@@ -32,12 +32,9 @@ class handler{
             $index++;
         }
         try {
-            foreach (ROUTES as $value) {
-                if($value["route"] == $mainRoute && $value["type"] == $method)
-                {
-                    new router($value, $params, $requestBody);
-                    die();
-                }
+            if(array_key_exists($mainRoute, ROUTES[$method])) {
+                new router(ROUTES[$method][$mainRoute], $params, $requestBody);
+                die();
             }
             $err = new ErrObj("Route does not exist", NOT_FOUND);
             $err->sendError();
@@ -47,7 +44,6 @@ class handler{
                 ." Archivo: ".$th->getFile(), INTERNAL_SERVER_ERROR);
             $err->sendError();
         }
-        
     }
 }
 ?>
