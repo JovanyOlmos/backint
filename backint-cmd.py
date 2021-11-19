@@ -40,7 +40,7 @@ def createUpdate(name):
     file.write('<?php\n')
     file.write('namespace backint\\update;\n\n')
     file.write('require_once(__DIR__."/../IUpdate.php");\n\n')
-    file.write('class ' + name.capitalize() + ' extends IUpdate {\n')
+    file.write('class Update' + re.sub("-|:|\s|\.", "", str(datetime.datetime.now())) + ' extends IUpdate {\n')
     file.write('\tpublic function script() {\n')
     file.write('\t\treturn "";\n')
     file.write('\t}\n\n')
