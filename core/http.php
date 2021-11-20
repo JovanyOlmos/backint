@@ -17,7 +17,7 @@ class Http {
      * 
      * @return string
      */
-    public function messageToJSON($message): string {
+    public static function messageToJSON($message): string {
         $json = '{"message": "'.$message.'"}';
         return $json;
     }
@@ -31,7 +31,7 @@ class Http {
      * 
      * @return void
      */
-    public function sendResponse($code, $json): void {
+    public static function sendResponse($code, $json): void {
         $sapi_type = php_sapi_name();
         if (substr($sapi_type, 0, 3) == 'cgi')
             header("Status: ".$code." ".HTTP_MESSAGE[$code]."");
@@ -49,7 +49,7 @@ class Http {
      * 
      * @return OInterface
      */
-    public function fillObjectFromJSON($objInterface, $requestBody): OInterface {
+    public static function fillObjectFromJSON($objInterface, $requestBody): OInterface {
         foreach ($objInterface->fields as $key => $iField) {
             if(array_key_exists($key, $requestBody)) {
                 $iField->value = $requestBody[$key];
@@ -69,7 +69,7 @@ class Http {
      * 
      * @return string
      */
-    public function convertObjectToJSON($objInterface): string {
+    public static function convertObjectToJSON($objInterface): string {
         $json = '{';
         $index = 0;
         if($objInterface->getPKValue() > 0) {
@@ -106,13 +106,13 @@ class Http {
      * 
      * @return string
      */
-    public function convertArrayObjectToJSON($objInterfaces): string {
+    public static function convertArrayObjectToJSON($objInterfaces): string {
         $json = '[';
         $indexObjct = 0;
         foreach ($objInterfaces as $objInterface) {
             if($indexObjct > 0)
                 $json .= ',';
-            $json .= $this->convertObjectToJSON($objInterface);
+            $json .= Http::convertObjectToJSON($objInterface);
             $indexObjct++;
         }
         $json .= ']';
@@ -128,7 +128,7 @@ class Http {
      * 
      * @return bool
      */
-    public function checkIfJSONIsComplete($objInterface, $requestBody): bool {
+    public static function checkIfJSONIsComplete($objInterface, $requestBody): bool {
         $exists = true;
         foreach ($objInterface->fields as $key => $iField) {
             if(!array_key_exists($key, $requestBody)) {

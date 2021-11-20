@@ -35,7 +35,7 @@ def autocompleteGettersAndSetters(name):
     file.write(newFile)
     file.close
 
-def createUpdate(name):
+def createUpdate():
     file = open('./updates/updates/Update' + re.sub("-|:|\s|\.", "", str(datetime.datetime.now())) + '.php', "w")
     file.write('<?php\n')
     file.write('namespace backint\\update;\n\n')
@@ -85,12 +85,10 @@ def createModelObject(name):
     file.write('use backint\\core\\ObjQL;\n')
     file.write('class APIModel' + name.capitalize() + ' extends APIModel {' + os.linesep)
     file.write('\tprivate $oi' + name.capitalize() + ';\n')
-    file.write('\tprivate $oController;\n')
-    file.write('\tprivate $http;\n\n')
+    file.write('\tprivate $oController;\n\n')
     file.write('\tpublic function __construct() {\n')
     file.write('\t\t$this->oController = new OController();\n')
     file.write('\t\t$this->oi' + name.capitalize() + ' = new OI' + name.capitalize() + '("' + name + '", "id");\n')
-    file.write('\t\t$this->http = new http();\n')
     file.write('\t}\n\n')
     file.write('\tpublic function getById($params) {\n')
     file.write('\t\t$helper = new SQLControllerHelper();\n')
@@ -98,12 +96,12 @@ def createModelObject(name):
     file.write('\t\t$this->oi' + name.capitalize() + ' = $this->oController->selectSimple($this->oi' + name.capitalize() + ', $helper);\n')
     file.write('\t\tif($this->oi' + name.capitalize() + '->getPKValue() > 0)\n')
     file.write('\t\t{\n')
-    file.write('\t\t\t$json = $this->http->convertObjectToJSON($this->oi' + name.capitalize() + ');\n')
-    file.write('\t\t\t$this->http->sendResponse(OK, $json);\n')
+    file.write('\t\t\t$json = Http::convertObjectToJSON($this->oi' + name.capitalize() + ');\n')
+    file.write('\t\t\tHttp::sendResponse(OK, $json);\n')
     file.write('\t\t}\n')
     file.write('\t\telse\n')
     file.write('\t\t{\n')
-    file.write('\t\t\t$this->http->sendResponse(NO_CONTENT, $this->http->messageToJSON("Resource does not exist"));\n')
+    file.write('\t\t\tHttp::sendResponse(NO_CONTENT, $this->http->messageToJSON("Resource does not exist"));\n')
     file.write('\t\t}\n')
     file.write('\t}\n\n')
     file.write('\tpublic function create($params, $requestBody) {\n')
@@ -157,11 +155,7 @@ while command != "exit":
                 else:
                     print("Invalid command")
             elif fileType == "update" or fileType == "-u":
-                arg = keyWord[3]
-                if len(arg) > 0:
-                    createUpdate(arg)
-                else:
-                    print("Invalid command")
+                createUpdate(arg)
             elif fileType == "all" or fileType == "-a":
                 arg = keyWord[3]
                 if len(arg) > 0:
@@ -174,7 +168,7 @@ while command != "exit":
                 print("\nYou can choose these next options: \n\n")
                 print("\tinterface [arg] | -i [arg] -> to generate an Interface object file\n\n")
                 print("\tmodel [arg] | -m [arg] -> to generate an API Model object file\n\n")
-                print("\tupdate [arg] | -u [arg] -> to generate an Update object file\n\n")
+                print("\tupdate | -u -> to generate an Update object file\n\n")
                 print("\tall [arg] | -a [arg] -> to generate both API Model and Interface object\n\n")
                 print("You can type also 'exit' to get out.\n")
             else:

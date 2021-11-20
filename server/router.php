@@ -27,10 +27,6 @@ class router{
                 $token = null;
                 if(array_key_exists("token", getallheaders()))
                     $token = getallheaders()["token"];
-                /*foreach (getallheaders() as $nombre => $valor) {
-                    if($nombre == "token")
-                        $token = $valor;
-                }*/
                 if($jwt->checkToken($token) == null) {
                     $err = new ErrObj("Invalid token", UNAUTHORIZED);
                     $err->sendError();

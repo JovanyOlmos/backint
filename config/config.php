@@ -35,12 +35,4 @@ define("AUTH_JWT_ACTIVE", false);
 define("JWT_KEY", "J2IA;D.-id28=i926?s");
 define("JWT_ENCRYPT", "HS512");
 define("JWT_EXPIRED_MINUTES", 30);
-
-define("READ", "1");
-define("WRITE", "2");
-define("DELETE", "3");
-define("READ_WRITE", "4");
-define("READ_DELETE", "5");
-define("WRITE_DELETE", "6");
-define("ALL", "7");
 ?>

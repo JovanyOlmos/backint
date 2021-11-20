@@ -41,10 +41,6 @@ class server{
         $apiKey = null;
         if(array_key_exists("api-key", getallheaders()))
             $apiKey = getallheaders()["api-key"];
-        /*foreach (getallheaders() as $nombre => $valor) {
-            if($nombre == "api-key")
-                $apiKey = $valor;
-        }*/
         $this->requestBody = json_decode($json, true);
         $this->serve($route, $apiKey);
     }
@@ -75,8 +71,7 @@ class server{
         } else {
             if($this->method == 'OPTIONS')
             {
-                $http = new http();
-                $http->sendResponse(OK, $http->messageToJSON("API is working!!"));
+                Http::sendResponse(OK, Http::messageToJSON("API is working!!"));
             } else {
                 $err = new ErrObj("You do not have authorized to use this API.", UNAUTHORIZED);
                 $err->sendError();

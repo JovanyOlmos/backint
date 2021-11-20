@@ -4,6 +4,7 @@ use backint\core\http;
 
 require_once("./definitions/HTTP.php");
 require_once("./core/http.php");
+
 class ErrObj {
     /**
      * Error message
@@ -90,8 +91,7 @@ class ErrObj {
         else
             header("HTTP/1.1 ".$this->code." ".HTTP_MESSAGE[$this->code]."");
         $json = '{"message": "'.$this->message.'"}';
-        $http = new http();
-        $http->sendResponse($this->code, $json);
+        Http::sendResponse($this->code, $json);
     }
 }
 ?>
