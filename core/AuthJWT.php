@@ -13,7 +13,7 @@ class AuthJWT {
      * 
      * @param array assoc $info
      */
-    public function generateJWT($info) {
+    public static function generateJWT($info) {
         $time = time();
 
         $token = array(
@@ -36,7 +36,7 @@ class AuthJWT {
      * 
      * @return null
      */
-    public function checkToken($token) {
+    public static function checkToken($token) {
         try {
             $decode = JWT::decode(
                 $token,

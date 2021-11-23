@@ -6,8 +6,19 @@ require_once("./definitions/HTTP.php");
 use Mysqli, Exception;
 
 class DBObj {
+
+    /**
+     * MySQL connection
+     * 
+     * @var mysqli
+     */
     private $connection;
 
+    /**
+     * Number of records in query
+     * 
+     * @var int
+     */
     private $num_records = 0;
 
     /**

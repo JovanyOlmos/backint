@@ -1,8 +1,7 @@
 <?php
-require_once("./config/config.php");
+require_once("./definitions/policies.php");
 define("AUTH", array(
-    array(
-        "username" => "lord",
+    "lord" => array(
         "password" => "123",
         "level" => READ
     )

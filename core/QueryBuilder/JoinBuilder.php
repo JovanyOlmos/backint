@@ -1,7 +1,14 @@
 <?php
-namespace backint\core\ControllerHelper;
+namespace backint\core\QueryBuilder;
 
-class ControllerUnion {
+class JoinBuilder {
+
+    /**
+     * Static instance
+     * 
+     * @var JoinBuilder
+     */
+    private static $instance;
 
     /**
      * Data source joins
@@ -41,16 +48,28 @@ class ControllerUnion {
     /**
      * Constructor
      */
-    public function __construct() {
+    private function __construct() {
         $this->unions = "";
+    }
+
+    /**
+     * Init a limit builder object
+     * 
+     * @return JoinBuilder
+     */
+    public static function getInstance(): JoinBuilder {
+        if (!isset(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
     }
 
     /**
      * Add a new data source and establish its relationship in the query
      * 
-     * @param OInterface $firstOInterface
+     * @param Model $firstModel
      * 
-     * @param OInterface $secondOInterface
+     * @param Model $secondModel
      * 
      * @param string $firstFieldMatch
      * 
@@ -60,10 +79,10 @@ class ControllerUnion {
      * 
      * @return void
      */
-    public function addJoin($firstOInterface, $secondOInterface, $firstFieldMatch, $secondFieldMatch, $unionType) {
-        $this->unions .= " ".$unionType." ".$firstOInterface->getTableName()
-            ." ON ".$firstOInterface->getTableName()."."
-            .$firstFieldMatch." = ".$secondOInterface->getTableName().".".$secondFieldMatch." ";
+    public function addJoin($firstModel, $secondModel, $firstFieldMatch, $secondFieldMatch, $unionType): void {
+        $this->unions .= " ".$unionType." ".$firstModel->getTableName()
+            ." ON ".$firstModel->getTableName()."."
+            .$firstFieldMatch." = ".$secondModel->getTableName().".".$secondFieldMatch." ";
     }
 
     /**
@@ -71,7 +90,7 @@ class ControllerUnion {
      * 
      * @return string
      */
-    public function getJoin() {
+    public function getJoin(): string {
         return $this->unions;
     }
 }

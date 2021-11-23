@@ -6,13 +6,6 @@ require_once("./config/config.php");
 class Auth {
 
     /**
-     * Constructor
-     */
-    public function __construct() {
-
-    }
-
-    /**
      * Check if credentials are correct
      * 
      * @param string $user
@@ -23,10 +16,10 @@ class Auth {
      * 
      * @return bool
      */
-    public function checkCredentials($user, $pass, $method) {
+    public static function checkCredentials($user, $pass, $method) {
         if(AUTH_ACTIVE) {
             foreach (AUTH as $value) {
-                if($value["username"] == $user && $value["password"] == $pass && $this->validLevel($method, $value["level"])) {
+                if($value["username"] == $user && $value["password"] == $pass && self::validLevel($method, $value["level"])) {
                     return true;
                 }
             }
@@ -44,7 +37,7 @@ class Auth {
      * 
      * @return bool
      */
-    private function validLevel($method, $level) {
+    private static function validLevel($method, $level) {
         if(($method == "GET" || $method == "PATCH") && ($level == READ || $level == READ_WRITE || $level == READ_DELETE || $level == ALL))
             return true;
         if(($method == "POST" || $method == "PUT") && ($level == WRITE || $level == READ_WRITE || $level == WRITE_DELETE || $level == ALL))

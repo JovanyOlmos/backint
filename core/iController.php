@@ -1,13 +1,13 @@
 <?php
 namespace backint\server\api;
 
-abstract class APIModel {
+interface iController {
     /**
      * Get a record using its id
      * 
      * @param array array $params
      */
-    abstract public function getById($params);
+    public function getById($params);
 
     /**
      * Update a record
@@ -16,7 +16,7 @@ abstract class APIModel {
      * 
      * @param array array $requestBody
      */
-    abstract public function update($params, $requestBody);
+    public function update($params, $requestBody);
 
     /**
      * Create a record
@@ -25,13 +25,13 @@ abstract class APIModel {
      * 
      * @param array array $requestBody
      */
-    abstract public function create($params, $requestBody);
+    public function create($params, $requestBody);
 
     /**
      * Delete a record
      * 
      * @param array array $params
      */
-    abstract public function deleteById($params);
+    public function deleteById($params);
 }
 ?>

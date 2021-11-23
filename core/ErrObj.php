@@ -6,6 +6,7 @@ require_once("./definitions/HTTP.php");
 require_once("./core/http.php");
 
 class ErrObj {
+
     /**
      * Error message
      * 
@@ -26,6 +27,8 @@ class ErrObj {
      * @param string $err -> Mensaje de error.
      * 
      * @param int $code -> Http Error Code
+     * 
+     * @return void
      */
     public function __construct($err, $code) {
         $this->message = $err;
@@ -65,6 +68,8 @@ class ErrObj {
      * Set the error message
      * 
      * @param string
+     * 
+     * @return void
      */
     public function setMessage($message): void {
         $this->message = $message;
@@ -74,6 +79,8 @@ class ErrObj {
      * Set the error code
      * 
      * @param int
+     * 
+     * @return void
      */
     public function setCode($code): void {
         $this->code = $code;

@@ -1,7 +1,15 @@
 <?php
-namespace backint\core\ControllerHelper;
+namespace backint\core\QueryBuilder;
 
-class ControllerOrder {
+class OrderBuilder {
+
+    /**
+     * Static instance
+     * 
+     * @var OrderBuilder
+     */
+    private static $instance;
+
     /**
      * Sorting variable
      * 
@@ -35,20 +43,32 @@ class ControllerOrder {
      */
     public function __construct() {
         $this->sorting = "";
-        $this->typeOrder = ControllerOrder::$ORDER_DESC;
+        $this->typeOrder = OrderBuilder::$ORDER_DESC;
+    }
+
+    /**
+     * Init a order builder
+     * 
+     * @return OrderBuilder
+     */
+    public static function getInstance(): OrderBuilder {
+        if (!isset(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
     }
 
     /**
      * Add a new field to sorting filter
      * 
-     * @param IField field to include
+     * @param Field field to include
      * 
      * @return void
      */
-    public function addSort($iField) {
+    public function addSort($field): void {
         if(strlen($this->sorting) > 0)
             $this->sorting .= ",";
-        $this->sorting .= " ".$iField->getColumnName()." ";
+        $this->sorting .= " ".$field->getColumnName()." ";
     }
 
     /**
@@ -56,7 +76,7 @@ class ControllerOrder {
      * 
      * @return string MySQL order query
      */
-    public function getSort() {
+    public function getSort(): string {
         $orderBy = "";
         if(strlen($this->sorting) > 0)
             $orderBy = " ORDER BY ".$this->sorting." ".$this->typeOrder;
@@ -70,7 +90,7 @@ class ControllerOrder {
      * 
      * @return void
      */
-    public function setSortingType($order) {
+    public function setSortingType($order): void {
         $this->typeOrder = $order;
     }
 }

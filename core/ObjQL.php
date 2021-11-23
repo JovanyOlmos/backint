@@ -102,7 +102,7 @@ class ObjQL {
     /**
      * Get a JSON string from the internal query
      * 
-     * @param SQLControllerHelper
+     * @param QueryBuilder
      * 
      * @return string
      */
