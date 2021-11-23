@@ -27,7 +27,7 @@ class WhereBuilder {
     /**
      * Dynamic Field
      * 
-     * @var Field
+     * @var iField
      */
     private $dynamicField;
 
@@ -102,7 +102,7 @@ class WhereBuilder {
     /**
      * Add a filter to OController
      * 
-     * @param Field $field
+     * @param iField $field
      * 
      * @param string $operator
      * 
@@ -129,7 +129,7 @@ class WhereBuilder {
     /**
      * Set a future filter, wich one wait a dynamic value
      * 
-     * @param Field $field
+     * @param iField $field
      * 
      * @param string $fieldName
      * 

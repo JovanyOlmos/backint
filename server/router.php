@@ -8,7 +8,7 @@ require_once("./config/routes.php");
 require_once("./core/ErrObj.php");
 require_once("./core/AuthJWT.php");
 
-class router{
+class Router{
     /**
      * Constructor
      * Execute APIModel function
@@ -19,15 +19,14 @@ class router{
      * 
      * @param array $requestBody
      */
-    public function __construct($action, $params, $requestBody) {
+    public static function process($action, $params, $requestBody) {
         try {
             require_once("./server/api-models/".$action["class"].".php");
             if(AUTH_JWT_ACTIVE && $action["jwt"]) {
-                $jwt = new AuthJWT();
                 $token = null;
                 if(array_key_exists("token", getallheaders()))
                     $token = getallheaders()["token"];
-                if($jwt->checkToken($token) == null) {
+                if(AuthJWT::checkToken($token) == null) {
                     $err = new ErrObj("Invalid token", UNAUTHORIZED);
                     $err->sendError();
                     die();

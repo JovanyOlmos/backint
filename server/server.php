@@ -2,7 +2,7 @@
 namespace backint\server;
 
 use backint\core\ErrObj;
-use backint\server\handler;
+use backint\server\Handler;
 use backint\core\http;
 use backint\core\Auth;
 
@@ -46,13 +46,12 @@ class server{
     }
 
     private function serve($route, $apiKey) {
-        $auth = new Auth();
         if(!array_key_exists("PHP_AUTH_USER", $_SERVER) || !array_key_exists("PHP_AUTH_PW", $_SERVER))
         {
             $_SERVER['PHP_AUTH_USER'] = "";
             $_SERVER['PHP_AUTH_PW'] = "";
         }
-        if($apiKey == API_KEY && $auth->checkCredentials($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $this->method)) {
+        if($apiKey == API_KEY && Auth::checkCredentials($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $this->method)) {
             $isValidMethod = false;
             foreach (ALLOWED_METHODS as $value) {
                 if($value == $this->method)
@@ -60,8 +59,7 @@ class server{
             }
             if($isValidMethod)
             {
-                $handler = new handler();
-                $handler->processRequest($this->method, $route, $this->requestBody);
+                Handler::processRequest($this->method, $route, $this->requestBody);
             }
             else
             {

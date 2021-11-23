@@ -3,8 +3,10 @@ namespace backint\core;
 require_once("./core/DBObj.php");
 require_once("./definitions/SQLFormat.php");
 use backint\core\DBObj;
+use backint\core\QueryBuilder;
 
 class ObjQL {
+
     /**
      * JSON structure in an array
      * 
@@ -108,9 +110,10 @@ class ObjQL {
      */
     public function buildJsonFromQuery($helper) {
         $this->query .= " FROM ".$this->source." "
-            .$helper->getControllerUnion()->getJoin()
-            .$helper->getControllerFilter()->getFilter()
-            .$helper->getControllerOrder()->getSort();
+            .$helper->join()->getJoin()
+            .$helper->where()->getFilter()
+            .$helper->orderBy()->getSort()
+            .$helper->limit()->getLimit();
         $dbObj = new DBObj();
         $doFetch = $dbObj->getFetchAssoc($this->query);
         $this->num_records = $dbObj->getNumRecords();

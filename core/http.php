@@ -6,11 +6,6 @@ require_once("./definitions/SQLFormat.php");
 class Http {
 
     /**
-     * Constructor
-     */
-    public function __construct() {}
-
-    /**
      * Convert a string into a JSON with a message property
      * 
      * @param string $message

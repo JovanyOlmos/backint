@@ -12,20 +12,13 @@ use Exception;
 class OController {
 
     /**
-     * Constructor
-     */
-    public function __construct() {
-
-    }
-
-    /**
      * Make an insert into a table
      * 
      * @param OInterface $objInterface
      * 
      * @return ErrObj
      */
-    public function insert($objInterface) {
+    public static function insert($objInterface) {
         try {
             $dbObject = new DBObj();
             $sqlQuery = "INSERT INTO ".$objInterface->getTableName()." (";
@@ -65,7 +58,7 @@ class OController {
      * 
      * @return ErrObj
      */
-    public function delete($objInterface) {
+    public static function delete($objInterface) {
         try {
             $dbObject = new DBObj();
             $sqlQuery = "DELETE FROM ".$objInterface->getTableName()." WHERE ".$objInterface->getPKFieldName()." = ".$objInterface->getPKValue();
@@ -83,7 +76,7 @@ class OController {
      * 
      * @return ErrObj
      */
-    public function update($objInterface) {
+    public static function update($objInterface) {
         try {
             $dbObject = new DBObj();
             $sqlQuery = "UPDATE ".$objInterface->getTableName()." SET ";
@@ -125,13 +118,13 @@ class OController {
      * 
      * @return null
      */
-    public function selectSimple($objInterface, $handlers) {
+    public static function selectSimple($objInterface, $handlers) {
         $dbObject = new DBObj();
         $sqlQuery = "SELECT * FROM ".$objInterface->getTableName().""
-            .$handlers->getControllerFilter()->getFilter()
-            .$handlers->getControllerOrder()->getSort()." LIMIT 1;";
+            .$handlers->where()->getFilter()
+            .$handlers->orderBy()->getSort()." LIMIT 1;";
         $doFetch = $dbObject->getFetchAssoc($sqlQuery);
-        return $this->fillObject($doFetch, $objInterface);
+        return self::fillObject($doFetch, $objInterface);
     }
 
     /**
@@ -145,7 +138,7 @@ class OController {
      * 
      * @return null
      */
-    private function fillObject($doFetch, $objInterface) {
+    private static function fillObject($doFetch, $objInterface) {
         if($doFetch != null)
         {
             while($row = $doFetch->fetch_assoc())
@@ -178,13 +171,13 @@ class OController {
      * 
      * @return null
      */
-    public function selectMultiple($objInterface, $handlers) {
+    public static function selectMultiple($objInterface, $handlers) {
         $dbObject = new DBObj();
         $sqlQuery = "SELECT * FROM ".$objInterface->getTableName().""
-            .$handlers->getControllerFilter()->getFilter()
-            .$handlers->getControllerOrder()->getSort().";";
+            .$handlers->where()->getFilter()
+            .$handlers->orderBy()->getSort().";";
         $doFetch = $dbObject->getFetchAssoc($sqlQuery);
-        return $this->fillObjects($doFetch, $objInterface);
+        return self::fillObjects($doFetch, $objInterface);
     }
 
     /**
@@ -198,7 +191,7 @@ class OController {
      * 
      * @return null
      */
-    private function fillObjects($doFetch, $objInterface) {
+    private static function fillObjects($doFetch, $objInterface) {
         $objectIndex = 0;
         $interfaceObjects = array();
         if($doFetch != null)

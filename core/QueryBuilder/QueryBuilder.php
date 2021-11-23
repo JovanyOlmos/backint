@@ -1,5 +1,5 @@
 <?php
-namespace backint\core\ControllerHelper;
+namespace backint\core;
 
 require("./core/QueryBuilder/LimitBuilder.php");
 require("./core/QueryBuilder/WhereBuilder.php");
@@ -18,7 +18,7 @@ class QueryBuilder {
      * 
      * @return WhereBuilder
      */
-    public static function where() {
+    public function where() {
         return WhereBuilder::getInstance();
     }
 

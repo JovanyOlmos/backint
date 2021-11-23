@@ -67,9 +67,9 @@ class JoinBuilder {
     /**
      * Add a new data source and establish its relationship in the query
      * 
-     * @param Model $firstModel
+     * @param OInterface $firstInterface
      * 
-     * @param Model $secondModel
+     * @param OInterface $secondInterface
      * 
      * @param string $firstFieldMatch
      * 
@@ -79,10 +79,10 @@ class JoinBuilder {
      * 
      * @return void
      */
-    public function addJoin($firstModel, $secondModel, $firstFieldMatch, $secondFieldMatch, $unionType): void {
-        $this->unions .= " ".$unionType." ".$firstModel->getTableName()
-            ." ON ".$firstModel->getTableName()."."
-            .$firstFieldMatch." = ".$secondModel->getTableName().".".$secondFieldMatch." ";
+    public function addJoin($firstInterface, $secondInterface, $firstFieldMatch, $secondFieldMatch, $unionType): void {
+        $this->unions .= " ".$unionType." ".$firstInterface->getTableName()
+            ." ON ".$firstInterface->getTableName()."."
+            .$firstFieldMatch." = ".$secondInterface->getTableName().".".$secondFieldMatch." ";
     }
 
     /**
