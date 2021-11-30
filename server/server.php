@@ -12,7 +12,6 @@ session_start();
 require_once("./core/http.php");
 require_once("./core/ErrObj.php");
 require_once("./server/handler.php");
-require_once("./definitions/HTTP.php");
 require_once("./config/config.php");
 require_once("./core/Auth.php");
 

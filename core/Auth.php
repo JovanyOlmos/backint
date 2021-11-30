@@ -1,6 +1,5 @@
 <?php
 namespace backint\core;
-require_once("./config/auth-credentials.php");
 require_once("./config/config.php");
 
 class Auth {

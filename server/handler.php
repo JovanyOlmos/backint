@@ -3,7 +3,6 @@ namespace backint\server;
 use backint\server\Router;
 use backint\core\ErrObj;
 
-require_once("./definitions/HTTP.php");
 require_once("./server/router.php");
 require_once("./config/config.php");
 require_once("./core/ErrObj.php");

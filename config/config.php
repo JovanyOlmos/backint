@@ -1,11 +1,9 @@
 <?php
-require_once("./definitions/SQLFormat.php");
-
 /* FOLDER CONFIGURATION */
 define("ROUTE_INDEX", "backint/");
 
 /* DATABASE CONFIGURATION */
-define("DATABASE_NAME", "vestimenta");
+define("DATABASE_NAME", "backint");
 define("DATABASE_HOST", "localhost");
 define("DATABASE_USER", "root");
 define("DATABASE_PASSWORD", "");

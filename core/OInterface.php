@@ -1,7 +1,9 @@
 <?php
 namespace backint\core;
+
 require_once("./core/IField.php");
 require_once("./config/config.php");
+
 use backint\core\IField;
 
 class OInterface {
@@ -55,8 +57,10 @@ class OInterface {
      * 
      * @return IField
      */
-    public function addField($columnName, $sqlFormat) {
+    public function addField($columnName, $sqlFormat, $default = null) {
         $iField = new IField($columnName, $sqlFormat);
+        if(!is_null($default))
+            $iField->setDefault($default);
         $this->fields[$columnName] = $iField;
         return $iField;
     }
@@ -95,6 +99,23 @@ class OInterface {
      */
     public function setPKValue($id) {
         $this->pkValue = $id;
+    }
+
+    /**
+     * Return the correct value or format when a field has a null value
+     * 
+     * @param iField
+     * 
+     * @return string
+     */
+    public static function nullPropagation($iField) {
+        if($iField->value == "" || $iField == "null" || is_null($iField->value))
+        {
+            if(is_null($iField->getDefault()))
+                return "null";
+            return $iField->getDefault();
+        }
+        return $iField->value;
     }
 }
 ?>

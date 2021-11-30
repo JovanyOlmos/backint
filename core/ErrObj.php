@@ -2,7 +2,6 @@
 namespace backint\core;
 use backint\core\http;
 
-require_once("./definitions/HTTP.php");
 require_once("./core/http.php");
 
 class ErrObj {

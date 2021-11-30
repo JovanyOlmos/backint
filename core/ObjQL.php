@@ -1,7 +1,7 @@
 <?php
 namespace backint\core;
 require_once("./core/DBObj.php");
-require_once("./definitions/SQLFormat.php");
+
 use backint\core\DBObj;
 use backint\core\QueryBuilder;
 

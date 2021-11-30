@@ -2,7 +2,7 @@
 namespace backint\core;
 use backint\core\ErrObj;
 require_once("./core/ErrObj.php");
-require_once("./definitions/HTTP.php");
+
 use Mysqli, Exception;
 
 class DBObj {

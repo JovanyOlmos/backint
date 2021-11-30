@@ -18,6 +18,11 @@ class IField {
     private $columnName;
 
     /**
+     * Column default value
+     */
+    private $default = null;
+
+    /**
      * Value from field
      * 
      * @var any
@@ -55,6 +60,13 @@ class IField {
     }
 
     /**
+     * Get default
+     */
+    public function getDefault() {
+        return $this->default;
+    }
+
+    /**
      * Set field type
      * 
      * @param string $type MySQL field type
@@ -70,6 +82,13 @@ class IField {
      */
     public function setColumnName($name) {
         $this->columnName = $name;
+    }
+
+    /**
+     * Set default value
+     */
+    public function setDefault($default) {
+        $this->default = $default;
     }
 }
 ?>

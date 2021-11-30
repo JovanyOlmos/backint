@@ -1,9 +1,10 @@
 <?php
 namespace backint\core;
-require_once("./definitions/HTTP.php");
+
 require_once("./core/DBObj.php");
 require_once("./core/OInterface.php");
 require_once("./core/ErrObj.php");
+
 use backint\core\DBObj;
 use backint\core\ErrObj;
 use backint\core\OInterface;
@@ -24,21 +25,17 @@ class OController {
             $sqlQuery = "INSERT INTO ".$objInterface->getTableName()." (";
             $sqlValues = "(";
             $index = 0;
-            foreach ($objInterface->fields as $key => $value) {
+            foreach ($objInterface->fields as $key => $ifield) {
                 if($index > 0)
                 {
                     $sqlQuery .= ",";
                     $sqlValues .= ",";
                 }
                 $columnName = $key;
-                $fieldValue = $value->value;
+                $fieldValue = $ifield->value;
                 $sqlQuery .= $columnName;
-                if($fieldValue == "")
-                    $fieldValue = "null";
-                if(SQL_FORMAT[$value->getFormat()] && $fieldValue != "null")
-                    $sqlValues .= "'".$fieldValue."'";
-                else
-                    $sqlValues .= $fieldValue;
+                $fieldValue = OInterface::nullPropagation($ifield);
+                $sqlValues .= self::convertToSQLFormat($ifield, $fieldValue);
                 $index++;
             }
             $sqlQuery .= ")";
@@ -81,21 +78,16 @@ class OController {
             $dbObject = new DBObj();
             $sqlQuery = "UPDATE ".$objInterface->getTableName()." SET ";
             $index = 0;
-            foreach ($objInterface->fields as $key => $value) {
-                if(!is_null($value->value) && $value->value != '') {
+            foreach ($objInterface->fields as $key => $iField) {
+                if(!is_null($iField->value) && $iField->value != '') {
                     if($index > 0)
                     {
                         $sqlQuery .= ",";
                     }
                     $columnName = $key;
-                    $fieldValue = $value->value;
+                    $fieldValue = $iField->value;
                     $sqlQuery .= $columnName." = ";
-                    if($fieldValue == "")
-                        $fieldValue = "null";
-                    if(SQL_FORMAT[$value->getFormat()] && $fieldValue != "null")
-                        $sqlQuery .= "'".$fieldValue."'";
-                    else
-                        $sqlQuery .= $fieldValue;
+                    $sqlQuery .= self::convertToSQLFormat($iField, $fieldValue);
                     $index++;
                 }
             }
@@ -218,6 +210,23 @@ class OController {
             $interfaceObjects = null;
         }
         return $interfaceObjects;
+    }
+
+    /**
+     * Return value in SQL format
+     * 
+     * @param IField $iField
+     * 
+     * @param any $value
+     * 
+     * @return string
+     */
+    private static function convertToSQLFormat($iField, $value) {
+        if(!is_null($iField->getDefault()) && $value == $iField->getDefault())
+            return $iField->getDefault();
+        if(SQL_FORMAT[$iField->getFormat()] && $value != "null")
+            return "'".$value."'";
+        return $value;
     }
 }
 ?>
