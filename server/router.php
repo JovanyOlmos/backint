@@ -2,15 +2,23 @@
 namespace backint\server;
 use backint\core\ErrObj;
 use backint\core\AuthJWT;
+use Configuration;
 
 require_once("./config/config.php");
 require_once("./config/routes.php");
 require_once("./core/ErrObj.php");
 require_once("./core/AuthJWT.php");
 
-class Router{
+class Router {
+
     /**
      * Constructor
+     */
+    public function __construct() {
+        
+    }
+    
+    /**
      * Execute APIModel function
      * 
      * @param array $action
@@ -22,7 +30,7 @@ class Router{
     public static function process($action, $params, $requestBody) {
         try {
             require_once("./server/api-models/".$action["class"].".php");
-            if(AUTH_JWT_ACTIVE && $action["jwt"]) {
+            if(Configuration::AUTH_JWT_ACTIVE && $action["jwt"]) {
                 $token = null;
                 if(array_key_exists("token", getallheaders()))
                     $token = getallheaders()["token"];

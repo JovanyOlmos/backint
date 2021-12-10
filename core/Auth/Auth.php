@@ -1,6 +1,8 @@
 <?php
 namespace backint\core;
-require_once("./config/config.php");
+
+use Configuration;
+use Policies;
 
 class Auth {
 
@@ -16,7 +18,7 @@ class Auth {
      * @return bool
      */
     public static function checkCredentials($user, $pass, $method) {
-        if(AUTH_ACTIVE) {
+        if(Configuration::AUTH_ACTIVE) {
             foreach (AUTH as $value) {
                 if($value["username"] == $user && $value["password"] == $pass && self::validLevel($method, $value["level"])) {
                     return true;
@@ -37,11 +39,11 @@ class Auth {
      * @return bool
      */
     private static function validLevel($method, $level) {
-        if(($method == "GET" || $method == "PATCH") && ($level == READ || $level == READ_WRITE || $level == READ_DELETE || $level == ALL))
+        if(($method == "GET" || $method == "PATCH") && ($level == Policies::READ || $level == Policies::READ_WRITE || $level == Policies::READ_DELETE || $level == Policies::ALL))
             return true;
-        if(($method == "POST" || $method == "PUT") && ($level == WRITE || $level == READ_WRITE || $level == WRITE_DELETE || $level == ALL))
+        if(($method == "POST" || $method == "PUT") && ($level == Policies::WRITE || $level == Policies::READ_WRITE || $level == Policies::WRITE_DELETE || $level == Policies::ALL))
             return true;
-        if($method == "DELETE" && ($level == DELETE || $level == READ_DELETE || $level == WRITE_DELETE || $level == ALL))
+        if($method == "DELETE" && ($level == Policies::DELETE || $level == Policies::READ_DELETE || $level == Policies::WRITE_DELETE || $level == Policies::ALL))
             return true;
         return false;
     }

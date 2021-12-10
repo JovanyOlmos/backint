@@ -1,5 +1,6 @@
 <?php
-require_once("./server/server.php");
+require("./config/config.php");
+require("./server/server.php");
 require("./definitions/HTTP.php");
 require("./definitions/policies.php");
 require("./definitions/SQLFormat.php");

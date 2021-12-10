@@ -1,21 +1,17 @@
 <?php
 namespace backint\core;
 
-require_once("./core/DBObj.php");
-require_once("./core/OInterface.php");
-require_once("./core/ErrObj.php");
-
 use backint\core\DBObj;
 use backint\core\ErrObj;
-use backint\core\OInterface;
+use backint\core\Model;
 use Exception;
 
-class OController {
+class ModelController {
 
     /**
      * Make an insert into a table
      * 
-     * @param OInterface $objInterface
+     * @param Model $objInterface
      * 
      * @return ErrObj
      */
@@ -34,7 +30,7 @@ class OController {
                 $columnName = $key;
                 $fieldValue = $ifield->value;
                 $sqlQuery .= $columnName;
-                $fieldValue = OInterface::nullPropagation($ifield);
+                $fieldValue = Model::nullPropagation($ifield);
                 $sqlValues .= self::convertToSQLFormat($ifield, $fieldValue);
                 $index++;
             }

@@ -1,11 +1,12 @@
 <?php
-namespace backint\core;
-use backint\core\ErrObj;
-require_once("./core/ErrObj.php");
 
+namespace backint\core;
+
+use backint\core\ErrObj;
+use Configuration;
 use Mysqli, Exception;
 
-class DBObj {
+class DBObj implements iDBObj {
 
     /**
      * MySQL connection
@@ -91,7 +92,13 @@ class DBObj {
      */
     private function initConn() {
         try {
-            $this->connection = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
+            $this->connection = 
+                new mysqli(
+                    Configuration::DATABASE_HOST, 
+                    Configuration::DATABASE_USER, 
+                    Configuration::DATABASE_PASSWORD, 
+                    Configuration::DATABASE_NAME
+                );
         } catch (Exception  $th) {
             $err = new ErrObj("Fatal error on server. ".$th->getMessage()
                 ." Linea: ".$th->getLine()

@@ -1,8 +1,6 @@
 <?php
 namespace backint\core;
-use backint\core\http;
-
-require_once("./core/http.php");
+use backint\core\Http;
 
 class ErrObj {
 
@@ -93,9 +91,9 @@ class ErrObj {
     public function sendError(): void {
         $sapi_type = php_sapi_name();
         if (substr($sapi_type, 0, 3) == 'cgi')
-            header("Status: ".$this->code." ".HTTP_MESSAGE[$this->code]."");
+            header("Status: ".$this->code." ".Http::HTTP_MESSAGE[$this->code]."");
         else
-            header("HTTP/1.1 ".$this->code." ".HTTP_MESSAGE[$this->code]."");
+            header("HTTP/1.1 ".$this->code." ".Http::HTTP_MESSAGE[$this->code]."");
         $json = '{"message": "'.$this->message.'"}';
         Http::sendResponse($this->code, $json);
     }

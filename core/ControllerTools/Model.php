@@ -1,12 +1,10 @@
 <?php
 namespace backint\core;
 
-require_once("./core/IField.php");
-require_once("./config/config.php");
+use backint\core\ModelField;
 
-use backint\core\IField;
-
-class OInterface {
+class Model {
+    
     /**
      * Table name
      * 
@@ -49,20 +47,20 @@ class OInterface {
     }
 
     /**
-     * Add a new field to OInterface object
+     * Add a new field to Model object
      * 
      * @param string $columnName
      * 
      * @param string $sqlFormat
      * 
-     * @return IField
+     * @return ModelField
      */
     public function addField($columnName, $sqlFormat, $default = null) {
-        $iField = new IField($columnName, $sqlFormat);
+        $modelField = new ModelField($columnName, $sqlFormat);
         if(!is_null($default))
-            $iField->setDefault($default);
-        $this->fields[$columnName] = $iField;
-        return $iField;
+            $modelField->setDefault($default);
+        $this->fields[$columnName] = $modelField;
+        return $modelField;
     }
 
     /**
@@ -104,18 +102,18 @@ class OInterface {
     /**
      * Return the correct value or format when a field has a null value
      * 
-     * @param iField
+     * @param ModelField
      * 
      * @return string
      */
-    public static function nullPropagation($iField) {
-        if($iField->value == "" || $iField == "null" || is_null($iField->value))
+    public static function nullPropagation($modelField) {
+        if($modelField->value == "" || $modelField == "null" || is_null($modelField->value))
         {
-            if(is_null($iField->getDefault()))
+            if(is_null($modelField->getDefault()))
                 return "null";
-            return $iField->getDefault();
+            return $modelField->getDefault();
         }
-        return $iField->value;
+        return $modelField->value;
     }
 }
 ?>

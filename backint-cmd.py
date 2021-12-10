@@ -3,9 +3,9 @@ import datetime
 import re
 
 def autocompleteGettersAndSetters(name):
-    numLines = len(open('./interfaces/OI' + name.capitalize() + '.php', "r").readlines())
+    numLines = len(open('./app/models/Model' + name.capitalize() + '.php', "r").readlines())
     newFile = ""
-    file = open('./interfaces/OI' + name.capitalize() + '.php', "r")
+    file = open('./app/models/Model' + name.capitalize() + '.php', "r")
     enabled = False
     stringVariables = ""
     counter = 1
@@ -31,7 +31,7 @@ def autocompleteGettersAndSetters(name):
         gettersAndSetters += "\t\t$this->" + variable + " = $iField;\n"
         gettersAndSetters += "\t}\n\n"
     newFile += "\n" + gettersAndSetters + "}\n?>"
-    file = open('./interfaces/OI' + name.capitalize() + '.php', "w")
+    file = open('./app/models/Model' + name.capitalize() + '.php', "w")
     file.write(newFile)
     file.close
 
@@ -50,11 +50,11 @@ def createUpdate():
     file.write('}\n')
     file.write('?>')
     
-def createInterfaceObject(name):
-    file = open('./interfaces/OI' + name.capitalize() + '.php', "w")
+def createModelObject(name):
+    file = open('./app/models/Model' + name.capitalize() + '.php', "w")
     file.write('<?php\n')
     file.write('namespace backint\\interfaces;\n')
-    file.write('require_once("./core/OInterface.php");\n')
+    file.write('require_once("./core/ControllerTools/Model.php");\n')
     file.write('use backint\\core\\OInterface;\n\n')
     file.write('class OI' + name.capitalize() + ' extends OInterface {\n')
     file.write('\t//itk autocomplete start' + os.linesep)

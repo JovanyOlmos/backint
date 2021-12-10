@@ -14,6 +14,13 @@ use backint\core\QueryBuilder\WhereBuilder;
 class QueryBuilder {
 
     /**
+     * Class constructor
+     */
+    public function __construct() {
+        
+    }
+
+    /**
      * Get where builder
      * 
      * @return WhereBuilder

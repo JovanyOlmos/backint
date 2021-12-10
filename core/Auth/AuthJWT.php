@@ -1,8 +1,8 @@
 <?php
 namespace backint\core;
-require_once('./config/config.php');
 require_once('./vendor/autoload.php');
 
+use Configuration;
 use Exception;
 use Firebase\JWT\JWT;
 
@@ -18,11 +18,11 @@ class AuthJWT {
 
         $token = array(
             "iat" => $time,
-            "exp" => $time + (JWT_EXPIRED_MINUTES * 60),
+            "exp" => $time + (Configuration::JWT_EXPIRED_MINUTES * 60),
             "data" => $info
         );
 
-        $jwt = JWT::encode($token, JWT_KEY, JWT_ENCRYPT);
+        $jwt = JWT::encode($token, Configuration::JWT_KEY, Configuration::JWT_ENCRYPT);
 
         return $jwt;
     }
@@ -40,8 +40,8 @@ class AuthJWT {
         try {
             $decode = JWT::decode(
                 $token,
-                JWT_KEY,
-                array(JWT_ENCRYPT)
+                Configuration::JWT_KEY,
+                array(Configuration::JWT_ENCRYPT)
             );
             return $decode;
         } catch(Exception $ex) {

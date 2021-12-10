@@ -1,8 +1,7 @@
 <?php
 namespace backint\core;
-require_once("./config/config.php");
 
-class IField {
+class ModelField {
     /**
      * Database value type
      * 

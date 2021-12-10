@@ -1,7 +1,8 @@
 <?php
 namespace backint\core;
 
-use backint\core\OInterface;
+use backint\core\Model;
+use SQL;
 
 class Json {
 
@@ -127,43 +128,43 @@ class Json {
     }
 
     /**
-     * Parse a Json into an interface object
+     * Parse a Json into a model object
      * 
-     * @param OInterface $objInterface
+     * @param Model $objModel
      * 
      * @param array $requestBody
      * 
-     * @return OInterface
+     * @return Model
      */
-    public static function fillObjectFromJSON($objInterface, $requestBody): OInterface {
-        foreach ($objInterface->fields as $key => $iField) {
+    public static function fillObjectFromJSON($objModel, $requestBody): Model {
+        foreach ($objModel->fields as $key => $field) {
             if(array_key_exists($key, $requestBody)) {
-                $iField->value = $requestBody[$key];
+                $field->value = $requestBody[$key];
             } else {
-                $iField->value = "";
+                $field->value = "";
             }
         }
-        if(array_key_exists($objInterface->getPKFieldName(), $requestBody))
-            $objInterface->setPKValue($requestBody[$objInterface->getPKFieldName()]);
-        return $objInterface;
+        if(array_key_exists($objModel->getPKFieldName(), $requestBody))
+            $objModel->setPKValue($requestBody[$objModel->getPKFieldName()]);
+        return $objModel;
     }
 
     /**
-     * Convert an OInterface into a JSON
+     * Convert a Model into a JSON
      * 
-     * @param OInterface $objInterface
+     * @param Model $objModel
      * 
      * @return string
      */
-    public static function convertObjectToJSON($objInterface): string {
+    public static function convertObjectToJSON($objModel): string {
         $json = '{';
         $index = 0;
-        if($objInterface->getPKValue() > 0) {
-            $json .= '"'.$objInterface->getPKFieldName().'": '.$objInterface->getPKValue().',';
-            foreach ($objInterface->fields as $key => $iField) {
+        if($objModel->getPKValue() > 0) {
+            $json .= '"'.$objModel->getPKFieldName().'": '.$objModel->getPKValue().',';
+            foreach ($objModel->fields as $key => $field) {
                 if($index > 0)
                     $json .= ', ';
-                $json .= '"'.$key.'":'.self::setJSONPropertyFormat($iField);
+                $json .= '"'.$key.'":'.self::setJSONPropertyFormat($field);
                 $index++;
             }
         }
@@ -174,17 +175,17 @@ class Json {
     /**
      * Convert an object's array into a JSON
      * 
-     * @param OInterface $objInterfaces
+     * @param Model $objModel
      * 
      * @return string
      */
-    public static function convertArrayObjectToJSON($objInterfaces): string {
+    public static function convertArrayObjectToJSON($objModels): string {
         $json = '[';
         $indexObjct = 0;
-        foreach ($objInterfaces as $objInterface) {
+        foreach ($objModels as $objModel) {
             if($indexObjct > 0)
                 $json .= ',';
-            $json .= self::convertObjectToJSON($objInterface);
+            $json .= self::convertObjectToJSON($objModel);
             $indexObjct++;
         }
         $json .= ']';
@@ -192,17 +193,17 @@ class Json {
     }
 
     /**
-     * Validate if a JSON and an OInterface have the same fields
+     * Validate if a JSON and a Model Object have the same fields
      * 
-     * @param OInterface $objInterface
+     * @param Model $objModel
      * 
      * @param array $requestBody
      * 
      * @return bool
      */
-    public static function checkIfJSONIsComplete($objInterface, $requestBody): bool {
+    public static function checkIfJSONIsComplete($objModel, $requestBody): bool {
         $exists = true;
-        foreach ($objInterface->fields as $key => $iField) {
+        foreach ($objModel->fields as $key => $field) {
             if(!array_key_exists($key, $requestBody)) {
                 $exists = false;
             }
@@ -213,20 +214,20 @@ class Json {
     /**
      * Format value to valid JSON property format
      * 
-     * @param IField
+     * @param ModelField
      * 
      * @return string
      */
-    private static function setJSONPropertyFormat($iField) {
-        if(SQL_FORMAT[$iField->getFormat()] && $iField->value != "null")
-            return '"'.$iField->value.'"';
-        if($iField->getFormat() == BOOLEAN)
+    private static function setJSONPropertyFormat($modelField) {
+        if(SQL::SQL_FORMAT[$modelField->getFormat()] && $modelField->value != "null")
+            return '"'.$modelField->value.'"';
+        if($modelField->getFormat() == SQL::BOOLEAN)
         {
-            if($iField->value)
+            if($modelField->value)
                 return 'true';
             return 'false';
         }
-        return $iField->value.'';
+        return $modelField->value.'';
     }
 }
 ?>

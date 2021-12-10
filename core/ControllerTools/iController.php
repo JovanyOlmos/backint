@@ -2,6 +2,12 @@
 namespace backint\server\api;
 
 interface iController {
+
+    /**
+     * Path definitions
+     */
+    public static function routes();
+
     /**
      * Get a record using its id
      * 
