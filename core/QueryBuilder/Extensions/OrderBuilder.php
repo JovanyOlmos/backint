@@ -61,7 +61,7 @@ class OrderBuilder {
     /**
      * Add a new field to sorting filter
      * 
-     * @param iField field to include
+     * @param ModelField field to include
      * 
      * @return void
      */

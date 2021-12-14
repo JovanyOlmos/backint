@@ -1,11 +1,14 @@
 <?php
+
+use backint\core\ErrObj;
+
 class Configuration {
     /**
      * Server folder
      * 
      * @var string
      */
-    const ROUTE_INDEX = "backint/";
+    const ROUTE_INDEX = "/backint/";
 
     /**
      * Database name
@@ -69,13 +72,6 @@ class Configuration {
      * @var string
      */
     const DEFAULT_CHARSET = "UTF-8";
-
-    /**
-     * Set basic authentication
-     * 
-     * @var bool
-     */
-    const AUTH_ACTIVE = false;
 
     /**
      * Set JWT Auth

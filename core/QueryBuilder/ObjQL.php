@@ -1,9 +1,9 @@
 <?php
 namespace backint\core;
-require_once("./core/DBObj.php");
 
 use backint\core\DBObj;
 use backint\core\QueryBuilder;
+use SQL;
 
 class ObjQL {
 
@@ -55,19 +55,19 @@ class ObjQL {
     /**
      * Add a field
      * 
-     * @param OInterface $oInterface
+     * @param Model $model
      * 
-     * @param IField $iField
+     * @param ModelField $field
      * 
      * @param string $alias
      * 
      * @return void
      */
-    public function addField($oInterface, $iField, $alias = "") {
+    public function addField($model, $field, $alias = "") {
         if(strlen($this->query) > 0)
-            $this->query .= ", ".$oInterface->getTableName().".".$iField->getColumnName();
+            $this->query .= ", ".$model->getTableName().".".$field->getColumnName();
         else
-            $this->query .= "SELECT ".$oInterface->getTableName().".".$iField->getColumnName();
+            $this->query .= "SELECT ".$model->getTableName().".".$field->getColumnName();
         if(strlen($alias) > 0)
             $this->query .= " AS '".$alias."'";
     }
@@ -75,28 +75,28 @@ class ObjQL {
     /**
      * Set main data source
      * 
-     * @param OInterface $oInterface
+     * @param Model $model
      * 
      * @return void
      */
-    public function setDataSource($oInterface) {
-        $this->source = $oInterface->getTableName();
+    public function setDataSource($model) {
+        $this->source = $model->getTableName();
     }
 
     /**
      * Create a MySQL query
      * 
-     * @param OInterface $oInterface
+     * @param Model $model
      * 
      * @param string $alias
      * 
      * @return void
      */
-    public function addPKField($oInterface, $alias = "") {
+    public function addPKField($model, $alias = "") {
         if(strlen($this->query) > 0)
-            $this->query .= ", ".$oInterface->getTableName().".".$oInterface->getPKFieldName();
+            $this->query .= ", ".$model->getTableName().".".$model->getPKFieldName();
         else
-            $this->query .= "SELECT ".$oInterface->getTableName().".".$oInterface->getPKFieldName();
+            $this->query .= "SELECT ".$model->getTableName().".".$model->getPKFieldName();
         if(strlen($alias) > 0)
             $this->query .= " AS '".$alias."'";
     }
@@ -108,12 +108,12 @@ class ObjQL {
      * 
      * @return string
      */
-    public function buildJsonFromQuery($helper) {
+    public function buildJsonFromQuery($queryBuilder) {
         $this->query .= " FROM ".$this->source." "
-            .$helper->join()->getJoin()
-            .$helper->where()->getFilter()
-            .$helper->orderBy()->getSort()
-            .$helper->limit()->getLimit();
+            .$queryBuilder->join()->getJoin()
+            .$queryBuilder->where()->getFilter()
+            .$queryBuilder->orderBy()->getSort()
+            .$queryBuilder->limit()->getLimit();
         $dbObj = new DBObj();
         $doFetch = $dbObj->getFetchAssoc($this->query);
         $this->num_records = $dbObj->getNumRecords();
@@ -130,32 +130,32 @@ class ObjQL {
                     $jsonFields .= ',';
                 $firstField = 0;
                 $jsonFields .= '{';
-                foreach ($this->fields as $fieldName) {
+                foreach ($this->fields as $field) {
                     if($firstField > 0)
                         $jsonFields .= ',';
-                    if($fieldName[1] != JSON)
+                    if($field[1] != SQL::JSON)
                     {
-                        if(SQL_FORMAT[$fieldName[1]])
+                        if(SQL::SQL_FORMAT[$field[1]])
                         {
-                            $jsonFields .= '"'.$fieldName[0].'":'.'"'.$row[$fieldName[0]].'"';
+                            $jsonFields .= '"'.$field[0].'":'.'"'.$row[$field[0]].'"';
                         }
                         else
                         { 
-                            if($row[$fieldName[0]] == null)
-                                $jsonFields .= '"'.$fieldName[0].'":'.'null';
+                            if($row[$field[0]] == null)
+                                $jsonFields .= '"'.$field[0].'":'.'null';
                             else
-                                $jsonFields .= '"'.$fieldName[0].'":'.''.$row[$fieldName[0]].'';
+                                $jsonFields .= '"'.$field[0].'":'.''.$row[$field[0]].'';
                         }
                     }
                     else
                     {
-                        if($fieldName[1] == JSON)
+                        if($field[1] == SQL::JSON)
                         {
                             //SQLhelper $fieldName[2]
-                            $fieldName[2]->getControllerFilter()->setDynamicValue($row[$fieldName[2]->getControllerFilter()->getDynamicFieldName()]);
-                            $fieldName[2]->getControllerFilter()->buildDynamicFilter();
+                            $field[2]->getControllerFilter()->setDynamicValue($row[$field[2]->getControllerFilter()->getDynamicFieldName()]);
+                            $field[2]->getControllerFilter()->buildDynamicFilter();
                             //ObjQL $fieldName[3]
-                            $jsonFields .=  '"'.$fieldName[0].'":'.$fieldName[3]->buildJsonFromQuery($fieldName[2]);
+                            $jsonFields .=  '"'.$field[0].'":'.$field[3]->buildJsonFromQuery($field[2]);
                         }
                     }
                     $firstField++;
@@ -182,77 +182,6 @@ class ObjQL {
      */
     public function getQuery() {
         return $this->query;
-    }
-
-    /**
-     * Get a JSON string from a MySQL query
-     * 
-     * @deprecated
-     * 
-     * @param string
-     * 
-     * @return string
-     */
-    public function getJSON($SQLSentence) {
-        $dbObj = new DBObj();
-        $doFetch = $dbObj->getFetchAssoc($SQLSentence);
-        $json = '';
-        $jsonFields = '';
-        if($doFetch == null) {
-            $json .= '{ "data": null }';
-        } else {
-            $json .= '{ "data": ';
-            $firstJson = 0;
-            $counterJsons = 0;
-            while($row = $doFetch->fetch_assoc())
-            {
-                $counterJsons++;
-                if($firstJson > 0)
-                    $jsonFields .= ',';
-                $firstField = 0;
-                $jsonFields .= '{';
-                foreach ($this->fields as $fieldName) {
-                    if($firstField > 0)
-                        $jsonFields .= ',';
-                    if($fieldName[1] != JSON)
-                    {
-                        if(SQL_FORMAT[$fieldName[1]])
-                        {
-                            $jsonFields .= '"'.$fieldName[0].'":'.'"'.$row[$fieldName[0]].'"';
-                        }
-                        else
-                        { 
-                            if($row[$fieldName[0]] == null)
-                                $jsonFields .= '"'.$fieldName[0].'":'.'null';
-                            else
-                                $jsonFields .= '"'.$fieldName[0].'":'.''.$row[$fieldName[0]].'';
-                        }
-                    }
-                    else
-                    {
-                        if($fieldName[1] == JSON)
-                        {
-                            if(array_key_exists(4, $fieldName))
-                                $fieldName[3] .= $row[$fieldName[4]];
-                            $jsonFields .=  '"'.$fieldName[0].'":'.$fieldName[2]->getJSON($fieldName[3]);
-                        }
-                    }
-                    $firstField++;
-                }
-                $jsonFields .= '}';
-                $firstJson++;
-            }
-            if($counterJsons > 1)
-                $json .= '['.$jsonFields.']';
-            else {
-                if($jsonFields == "")
-                    $json .= 'null';
-                else
-                    $json .= $jsonFields;
-            }
-            $json .= '}';
-        }
-        return $json;
     }
 }
 ?>

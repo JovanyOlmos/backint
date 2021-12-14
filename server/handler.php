@@ -2,11 +2,8 @@
 namespace backint\server;
 use backint\server\Router;
 use backint\core\ErrObj;
-
-require_once("./server/router.php");
-require_once("./config/config.php");
-require_once("./core/ErrObj.php");
-require_once("./config/routes.php");
+use backint\core\Http;
+use Configuration;
 
 class Handler{
 
@@ -14,26 +11,16 @@ class Handler{
      * Check if is a valid request
      */
     public static function processRequest($method, $route, $requestBody = null) {
-        $allParams = explode("/", $route);
-        $configPrefixUrl = explode("/", ROUTE_INDEX);
-        $params = array();
-        $index = 0;
-        $mainRoute = $allParams[count($configPrefixUrl)];
-        for ($i = count($configPrefixUrl) + 1; $i < count($allParams) ; $i++) { 
-            $params[$index] = $allParams[$i];
-            $index++;
-        }
+        $allParams = str_replace(Configuration::ROUTE_INDEX, "", $route);
+        $params = explode("/", $allParams);
+        $mainRoute = array_slice($params, 0, 2);
+        $params = array_slice($params, 2);
         try {
-            if(array_key_exists($mainRoute, ROUTES[$method])) {
-                Router::process(ROUTES[$method][$mainRoute], $params, $requestBody);
-                die();
-            }
-            $err = new ErrObj("Route does not exist", NOT_FOUND);
-            $err->sendError();
+            Router::process($method, $mainRoute, $params, $requestBody);
         } catch (\Throwable $th) {
             $err = new ErrObj("Fatal error on server. ".$th->getMessage()
                 ." Linea: ".$th->getLine()
-                ." Archivo: ".$th->getFile(), INTERNAL_SERVER_ERROR);
+                ." Archivo: ".$th->getFile(), Http::INTERNAL_SERVER_ERROR);
             $err->sendError();
         }
     }

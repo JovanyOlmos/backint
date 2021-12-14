@@ -27,7 +27,7 @@ class ErrObj {
      * 
      * @return void
      */
-    public function __construct($err, $code) {
+    public function __construct($err = "", $code = 0) {
         $this->message = $err;
         $this->code = $code;
     }
@@ -94,7 +94,7 @@ class ErrObj {
             header("Status: ".$this->code." ".Http::HTTP_MESSAGE[$this->code]."");
         else
             header("HTTP/1.1 ".$this->code." ".Http::HTTP_MESSAGE[$this->code]."");
-        $json = '{"message": "'.$this->message.'"}';
+        $json = '{"error": "'.$this->message.'"}';
         Http::sendResponse($this->code, $json);
     }
 }

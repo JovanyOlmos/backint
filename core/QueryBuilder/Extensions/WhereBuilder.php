@@ -1,6 +1,8 @@
 <?php
 namespace backint\core\QueryBuilder;
 
+use SQL;
+
 class WhereBuilder {
 
     /**
@@ -27,7 +29,7 @@ class WhereBuilder {
     /**
      * Dynamic Field
      * 
-     * @var iField
+     * @var ModelField
      */
     private $dynamicField;
 
@@ -100,9 +102,9 @@ class WhereBuilder {
     }
 
     /**
-     * Add a filter to OController
+     * Add a filter to Model Controller
      * 
-     * @param iField $field
+     * @param ModelField $field
      * 
      * @param string $operator
      * 
@@ -112,7 +114,7 @@ class WhereBuilder {
      */
     public function addFilter($field, $operator, $value): void {
         $this->filter .= " AND ".$field->getColumnName()." ".$operator." ";
-        if(SQL_FORMAT[$field->getFormat()]) {
+        if(SQL::SQL_FORMAT[$field->getFormat()]) {
             if($field->getFormat() == 2)
                 $this->filter .= " DATE('".$value."')";
             else {
@@ -129,7 +131,7 @@ class WhereBuilder {
     /**
      * Set a future filter, wich one wait a dynamic value
      * 
-     * @param iField $field
+     * @param ModelField $field
      * 
      * @param string $fieldName
      * 
@@ -147,7 +149,7 @@ class WhereBuilder {
      */
     public function buildDynamicFilter(): void {
         $this->filter .= " AND ".$this->dynamicField->getColumnName()." ".WhereBuilder::$EQUALS." ";
-        if(SQL_FORMAT[$this->dynamicField->getFormat()]) {
+        if(SQL::SQL_FORMAT[$this->dynamicField->getFormat()]) {
             if($this->dynamicField->getFormat() == 2)
                 $this->filter .= " DATE('".$this->dynamicValue."')";
             else {

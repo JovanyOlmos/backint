@@ -3,6 +3,7 @@
 namespace backint\core;
 
 use backint\core\ErrObj;
+use backint\core\Http;
 use Configuration;
 use Mysqli, Exception;
 
@@ -51,7 +52,7 @@ class DBObj implements iDBObj {
         } catch (Exception $th) {
             $err = new ErrObj("Fatal error on server. ".$th->getMessage()
                 ." Linea: ".$th->getLine()
-                ." Archivo: ".$th->getFile(), INTERNAL_SERVER_ERROR);
+                ." Archivo: ".$th->getFile(), Http::INTERNAL_SERVER_ERROR);
             $err->sendError();
             mysqli_close($this->connection);
             die();
@@ -69,12 +70,12 @@ class DBObj implements iDBObj {
         $this->initConn();
         if($result = mysqli_query($this->connection, $query)) {
             mysqli_close($this->connection);
-            return new ErrObj("", CREATED);
+            return new ErrObj("", Http::CREATED);
         }
         else {
             $err = mysqli_error($this->connection);
             mysqli_close($this->connection);
-            return new ErrObj("".$err, CONFILCT);
+            return new ErrObj("Error al procesar la consulta: ".$err, Http::CONFILCT);
         }
     }
 
@@ -102,7 +103,7 @@ class DBObj implements iDBObj {
         } catch (Exception  $th) {
             $err = new ErrObj("Fatal error on server. ".$th->getMessage()
                 ." Linea: ".$th->getLine()
-                ." Archivo: ".$th->getFile(), INTERNAL_SERVER_ERROR);
+                ." Archivo: ".$th->getFile(), Http::INTERNAL_SERVER_ERROR);
             $err->sendError();
             die();
         }

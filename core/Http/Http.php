@@ -3,7 +3,7 @@ namespace backint\core;
 
 class Http {
 
-    /*const CONTINUE = 100;
+    const CONTINUE = 100;
 
     const SWITCHING_PROTOCOL = 101;
     
@@ -37,7 +37,7 @@ class Http {
     
     const CONFILCT = 409;
     
-    const INTERNAL_SERVER_ERROR = 500;*/
+    const INTERNAL_SERVER_ERROR = 500;
     
     /**
      * Http code meaning
@@ -72,12 +72,12 @@ class Http {
      * 
      * @return void
      */
-    public static function sendResponse($code, $json): void {
+    public static function sendResponse($code, $json = ""): void {
         $sapi_type = php_sapi_name();
         if (substr($sapi_type, 0, 3) == 'cgi')
-            header("Status: ".$code." ".HTTP_MESSAGE[$code]."");
+            header("Status: ".$code." ".Http::HTTP_MESSAGE[$code]."");
         else
-            header("HTTP/1.1 ".$code." ".HTTP_MESSAGE[$code]."");
+            header("HTTP/1.1 ".$code." ".Http::HTTP_MESSAGE[$code]."");
         echo $json;
     }
 }

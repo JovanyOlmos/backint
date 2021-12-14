@@ -36,14 +36,11 @@ class Model {
     /**
      * Constructor
      * 
-     * @param string $tableName
-     * 
-     * @param string $pkFieldName primary key field name
      */
-    public function __construct($tableName, $pkFieldName) {
+    public function __construct() {
         $this->fields = array();
-        $this->tableName = $tableName;
-        $this->pkFieldName = $pkFieldName;
+        $this->tableName = "";
+        $this->pkFieldName = "id";
     }
 
     /**
@@ -88,6 +85,20 @@ class Model {
      */
     public function getPKValue() {
         return $this->pkValue;
+    }
+
+    /**
+     * Set table name for model
+     */
+    public function setTableName($tableName) {
+        $this->tableName = $tableName;
+    }
+
+    /**
+     * Set primary key field name
+     */
+    public function setPKFieldName($pkFieldName) {
+        $this->pkFieldName = $pkFieldName;
     }
 
     /**

@@ -1,10 +1,10 @@
 <?php
 namespace backint\core;
 
-require("./core/QueryBuilder/LimitBuilder.php");
-require("./core/QueryBuilder/WhereBuilder.php");
-require("./core/QueryBuilder/OrderBuilder.php");
-require("./core/QueryBuilder/JoinBuilder.php");
+require("./core/QueryBuilder/Extensions/JoinBuilder.php");
+require("./core/QueryBuilder/Extensions/LimitBuilder.php");
+require("./core/QueryBuilder/Extensions/OrderBuilder.php");
+require("./core/QueryBuilder/Extensions/WhereBuilder.php");
 
 use backint\core\QueryBuilder\JoinBuilder;
 use backint\core\QueryBuilder\LimitBuilder;

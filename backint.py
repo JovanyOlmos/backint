@@ -27,8 +27,8 @@ def autocompleteGettersAndSetters(name):
         gettersAndSetters += "\tpublic function get" + variable.capitalize() + "(){\n"
         gettersAndSetters += "\t\treturn $this->" + variable + ";\n"
         gettersAndSetters += "\t}\n\n"
-        gettersAndSetters += "\tpublic function set" + variable.capitalize() + "($iField){\n"
-        gettersAndSetters += "\t\t$this->" + variable + " = $iField;\n"
+        gettersAndSetters += "\tpublic function set" + variable.capitalize() + "($field){\n"
+        gettersAndSetters += "\t\t$this->" + variable + " = $field;\n"
         gettersAndSetters += "\t}\n\n"
     newFile += "\n" + gettersAndSetters + "}\n?>"
     file = open('./app/models/Model' + name.capitalize() + '.php', "w")
@@ -53,78 +53,108 @@ def createUpdate():
 def createModelObject(name):
     file = open('./app/models/Model' + name.capitalize() + '.php', "w")
     file.write('<?php\n')
-    file.write('namespace backint\\interfaces;\n')
-    file.write('require_once("./core/ControllerTools/Model.php");\n')
-    file.write('use backint\\core\\OInterface;\n\n')
-    file.write('class OI' + name.capitalize() + ' extends OInterface {\n')
+    file.write('namespace backint\\models;\n\n')
+    file.write('use backint\\core\\Model;\n')
+    file.write('use SQL;\n\n')
+    file.write('class Model' + name.capitalize() + ' extends Model {\n')
     file.write('\t//itk autocomplete start' + os.linesep)
     file.write('\t//itk autocomplete end' + os.linesep)
-    file.write('\tpublic function __construct($tableName, $PKFieldName) {\n')
-    file.write('\t\tparent::__construct($tableName, $PKFieldName);' + os.linesep)
+    file.write('\tpublic function __construct() {\n')
+    file.write('\t\tparent::__construct();\n')
+    file.write('\t\t$this->setTableName("table");\n')
+    file.write('\t\t$this->setPKFieldName("id");\n\n')
     file.write('\t}\n')
     file.write('}\n')
     file.write('?>')
     file.close()
 
-def createModelObject(name):
-    file = open('./server/api-models/APIModel' + name.capitalize() + '.php', "w")
+def createControllerObject(name):
+    file = open('./app/controllers/Controller' + name.capitalize() + '.php', "w")
     file.write('<?php\n')
-    file.write('namespace backint\\server\\api;\n')
-    file.write('require_once("./core/OController.php");\n')
-    file.write('require_once("./core/QueryBuilder/QueryBuilder.php");\n')
-    file.write('require_once("./core/http.php");\n')
-    file.write('require_once("./core/json.php");\n')
-    file.write('require_once("./core/ObjQL.php");\n')
-    file.write('require_once("./interfaces/OI' + name.capitalize() + '.php");\n')
-    file.write('require_once("./core/iController.php");\n' + os.linesep)
-    file.write('use backint\\core\\OController;\n')
+    file.write('namespace backint\\app\\controllers;\n\n')
+    file.write('use backint\\core\\QuickQuery;\n')
     file.write('use backint\\core\\QueryBuilder;\n')
-    file.write('use backint\\interfaces\\OI' + name.capitalize() + ';\n')
+    file.write('use backint\\models\\Model' + name.capitalize() + ';\n')
     file.write('use backint\\core\\Http;\n')
     file.write('use backint\\core\\Json;\n')
+    file.write('use backint\\core\\ControllerBase;\n')
     file.write('use backint\\core\\ObjQL;\n\n')
-    file.write('class APIModel' + name.capitalize() + ' implements iController {' + os.linesep)
-    file.write('\tprivate $oi' + name.capitalize() + ';\n\n')
-    file.write('\tpublic function __construct() {\n')
-    file.write('\t\t$this->oi' + name.capitalize() + ' = new OI' + name.capitalize() + '("' + name + '", "id");\n')
+    file.write('class Controller' + name.capitalize() + ' extends ControllerBase {' + os.linesep)
+    file.write('\tprivate $model' + name.capitalize() + ';\n\n')
+    file.write('\tprivate QuickQuery $quickQuery;\n\n')
+    file.write('\tpublic function __construct(QuickQuery $_quickQuery) {\n')
+    file.write('\t\t$this->model' + name.capitalize() + ' = new Model' + name.capitalize() + '();\n')
+    file.write('\t\t$this->quickQuery = $_quickQuery;\n')
+    file.write('\t\t$this->setRouteSettings("GET", "get_by_id", false);\n')
+    file.write('\t\t$this->setRouteSettings("POST", "create", false);\n')
+    file.write('\t\t$this->setRouteSettings("PUT", "update", false);\n')
+    file.write('\t\t$this->setRouteSettings("DELETE", "delete_by_id", false);\n')
     file.write('\t}\n\n')
-    file.write('\tpublic function getById($params) {\n')
-    file.write('\t\t$helper = new QueryBuilder();\n')
-    file.write('\t\t$helper->where()->addPKFilter($this->oi' + name.capitalize() + '->getPKFieldName(), $params[0]);\n')
-    file.write('\t\t$this->oi' + name.capitalize() + ' = OController::selectSimple($this->oi' + name.capitalize() + ', $helper);\n')
-    file.write('\t\tif($this->oi' + name.capitalize() + '->getPKValue() > 0)\n')
+    file.write('\t/**\n')
+    file.write('\t * Get a record passing by param an id\n')
+    file.write('\t * \n')
+    file.write('\t * @param mixed $params\n')
+    file.write('\t * \n')
+    file.write('\t * @return void\n')
+    file.write('\t */\n')
+    file.write('\tpublic function get_by_id($params) {\n')
+    file.write('\t\t$builder = new QueryBuilder();\n')
+    file.write('\t\t$builder->where()->addPKFilter($this->model' + name.capitalize() + '->getPKFieldName(), $params[0]);\n')
+    file.write('\t\t$this->model' + name.capitalize() + ' = $this->quickQuery->selectSimple($this->model' + name.capitalize() + ', $builder);\n')
+    file.write('\t\tif(!is_null($this->model' + name.capitalize() + ') && $this->model' + name.capitalize() + '->getPKValue() > 0)\n')
     file.write('\t\t{\n')
-    file.write('\t\t\t$json = Json::convertObjectToJSON($this->oi' + name.capitalize() + ');\n')
-    file.write('\t\t\tHttp::sendResponse(OK, $json);\n')
+    file.write('\t\t\t$json = Json::convertObjectToJSON($this->model' + name.capitalize() + ');\n')
+    file.write('\t\t\tHttp::sendResponse(Http::OK, $json);\n')
     file.write('\t\t}\n')
     file.write('\t\telse\n')
     file.write('\t\t{\n')
-    file.write('\t\t\tHttp::sendResponse(NO_CONTENT, Json::messageToJSON("Resource does not exist"));\n')
+    file.write('\t\t\tHttp::sendResponse(Http::NO_CONTENT);\n')
     file.write('\t\t}\n')
     file.write('\t}\n\n')
+    file.write('\t/**\n')
+    file.write('\t * Insert a new record into database passing by body the info\n')
+    file.write('\t * \n')
+    file.write('\t * @param mixed $params\n')
+    file.write('\t * \n')
+    file.write('\t * @return void\n')
+    file.write('\t */\n')
     file.write('\tpublic function create($params, $requestBody) {\n')
-    file.write('\t\t$this->oi' + name.capitalize() + ' = Json::fillObjectFromJSON($this->oi' + name.capitalize() + ', $requestBody);\n')
-    file.write('\t\t$err = OController::insert($this->oi' + name.capitalize() + ');\n')
+    file.write('\t\t$this->model' + name.capitalize() + ' = Json::fillObjectFromJSON($this->model' + name.capitalize() + ', $requestBody);\n')
+    file.write('\t\t$err = $this->quickQuery->insert($this->model' + name.capitalize() + ');\n')
     file.write('\t\tif($err->hasErrors())\n')
     file.write('\t\t\t$err->sendError();\n')
     file.write('\t\telse\n')
-    file.write('\t\t\tHttp::sendResponse(CREATED, Json::messageToJSON("Created correctly"));\n')
+    file.write('\t\t\tHttp::sendResponse(Http::CREATED, Json::messageToJSON("Created correctly"));\n')
     file.write('\t}\n\n')
+    file.write('\t/**\n')
+    file.write('\t * Update an existing record passing by body all information\n')
+    file.write('\t * \n')
+    file.write('\t * @param mixed $params\n')
+    file.write('\t * \n')
+    file.write('\t * @return void\n')
+    file.write('\t */\n')
     file.write('\tpublic function update($params, $requestBody) {\n')
-    file.write('\t\t$this->oi' + name.capitalize() + ' = Json::fillObjectFromJSON($this->oi' + name.capitalize() + ', $requestBody);\n')
-    file.write('\t\t$err = OController::update($this->oi' + name.capitalize() + ');\n')
+    file.write('\t\t$this->model' + name.capitalize() + ' = Json::fillObjectFromJSON($this->model' + name.capitalize() + ', $requestBody);\n')
+    file.write('\t\t$err = $this->quickQuery->update($this->model' + name.capitalize() + ');\n')
     file.write('\t\tif($err->hasErrors())\n')
     file.write('\t\t\t$err->sendError();\n')
     file.write('\t\telse\n')
-    file.write('\t\t\tHttp::sendResponse(CREATED, Json::messageToJSON("Updated correctly"));\n')
+    file.write('\t\t\tHttp::sendResponse(Http::CREATED, Json::messageToJSON("Updated correctly"));\n')
     file.write('\t}\n\n')
-    file.write('\tpublic function deleteById($params) {\n')
-    file.write('\t\t$this->oi' + name.capitalize() + '->setPKValue($params[0]);\n')
-    file.write('\t\t$err = OController::delete($this->oi' + name.capitalize() + ');\n')
+    file.write('\t/**\n')
+    file.write('\t * Delete a record passing by param an id\n')
+    file.write('\t * \n')
+    file.write('\t * @param mixed $params\n')
+    file.write('\t * \n')
+    file.write('\t * @return void\n')
+    file.write('\t */\n')
+    file.write('\tpublic function delete_by_id($params) {\n')
+    file.write('\t\t$this->model' + name.capitalize() + '->setPKValue($params[0]);\n')
+    file.write('\t\t$err = $this->quickQuery->delete($this->model' + name.capitalize() + ');\n')
     file.write('\t\tif($err->hasErrors())\n')
     file.write('\t\t\t$err->sendError();\n')
     file.write('\t\telse\n')
-    file.write('\t\t\tHttp::sendResponse(CREATED, Json::messageToJSON("Deleted correctly"));\n')
+    file.write('\t\t\tHttp::sendResponse(Http::CREATED, Json::messageToJSON("Deleted correctly"));\n')
     file.write('\t}\n')
     file.write('}\n')
     file.write('?>')
@@ -140,16 +170,16 @@ while command != "exit":
         action = keyWord[1]
         if action == "-g" or action == "generate":
             fileType = keyWord[2]
-            if fileType == "interface" or fileType == "-i":
-                arg = keyWord[3]
-                if len(arg) > 0:
-                    createInterfaceObject(arg)
-                else:
-                    print("Invalid command")
-            elif fileType == "model" or fileType == "-m":
+            if fileType == "model" or fileType == "-m":
                 arg = keyWord[3]
                 if len(arg) > 0:
                     createModelObject(arg)
+                else:
+                    print("Invalid command")
+            elif fileType == "controller" or fileType == "-c":
+                arg = keyWord[3]
+                if len(arg) > 0:
+                    createControllerObject(arg)
                 else:
                     print("Invalid command")
             elif fileType == "update" or fileType == "-u":
@@ -157,7 +187,7 @@ while command != "exit":
             elif fileType == "all" or fileType == "-a":
                 arg = keyWord[3]
                 if len(arg) > 0:
-                    createInterfaceObject(arg)
+                    createControllerObject(arg)
                     createModelObject(arg)
                 else:
                     print("Invalid command")
