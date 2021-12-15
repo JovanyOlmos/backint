@@ -50,7 +50,7 @@ class server{
         } else {
             if($this->method == 'OPTIONS')
             {
-                Http::sendResponse(OK, Json::messageToJSON("API is working!!"));
+                Http::sendResponse(Http::OK, Json::messageToJSON("API is working!!"));
             } else {
                 $err = new ErrObj("You do not have authorized to use this API.", Http::UNAUTHORIZED);
                 $err->sendError();

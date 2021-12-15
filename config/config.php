@@ -1,7 +1,5 @@
 <?php
 
-use backint\core\ErrObj;
-
 class Configuration {
     /**
      * Server folder
