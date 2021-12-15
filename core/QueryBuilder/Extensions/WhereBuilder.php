@@ -1,7 +1,16 @@
 <?php
-namespace backint\core\ControllerHelper;
-require_once("./definitions/SQLFormat.php");
-class ControllerFilter {
+namespace backint\core\QueryBuilder;
+
+use SQL;
+
+class WhereBuilder {
+
+    /**
+     * Static instance
+     * 
+     * @var WhereBuilder
+     */
+    private static $instance;
 
     /**
      * Filter
@@ -18,11 +27,11 @@ class ControllerFilter {
     private $dynamicValue;
 
     /**
-     * Dynamic IField
+     * Dynamic Field
      * 
-     * @var IField
+     * @var ModelField
      */
-    private $dynamicIField;
+    private $dynamicField;
 
     /**
      * Dynamic field name to match
@@ -81,9 +90,21 @@ class ControllerFilter {
     }
 
     /**
-     * Add a filter to OController
+     * Init a where builder
      * 
-     * @param IField $iField
+     * @return WhereBuilder
+     */
+    public static function getInstance(): WhereBuilder {
+        if (!isset(self::$instance)) {
+            self::$instance = new static();
+        }
+        return self::$instance;
+    }
+
+    /**
+     * Add a filter to Model Controller
+     * 
+     * @param ModelField $field
      * 
      * @param string $operator
      * 
@@ -91,10 +112,10 @@ class ControllerFilter {
      * 
      * @return void
      */
-    public function addFilter($iField, $operator, $value) {
-        $this->filter .= " AND ".$iField->getColumnName()." ".$operator." ";
-        if(SQL_FORMAT[$iField->getFormat()]) {
-            if($iField->getFormat() == 2)
+    public function addFilter($field, $operator, $value): void {
+        $this->filter .= " AND ".$field->getColumnName()." ".$operator." ";
+        if(SQL::SQL_FORMAT[$field->getFormat()]) {
+            if($field->getFormat() == 2)
                 $this->filter .= " DATE('".$value."')";
             else {
                 if($operator == "LIKE")
@@ -108,16 +129,16 @@ class ControllerFilter {
     }
 
     /**
-     * Set a furute filter, wich one wait a dynamic value
+     * Set a future filter, wich one wait a dynamic value
      * 
-     * @param IField $iField
+     * @param ModelField $field
      * 
      * @param string $fieldName
      * 
      * @return void
      */
-    public function setDynamicFilter($iField, $fieldName) {
-        $this->dynamicIField = $iField;
+    public function setDynamicFilter($field, $fieldName): void {
+        $this->dynamicField = $field;
         $this->dynamicFieldName = $fieldName;
     }
 
@@ -126,10 +147,10 @@ class ControllerFilter {
      * 
      * @return void
      */
-    public function buildDynamicFilter() {
-        $this->filter .= " AND ".$this->dynamicIField->getColumnName()." ".ControllerFilter::$EQUALS." ";
-        if(SQL_FORMAT[$this->dynamicIField->getFormat()]) {
-            if($this->dynamicIField->getFormat() == 2)
+    public function buildDynamicFilter(): void {
+        $this->filter .= " AND ".$this->dynamicField->getColumnName()." ".WhereBuilder::$EQUALS." ";
+        if(SQL::SQL_FORMAT[$this->dynamicField->getFormat()]) {
+            if($this->dynamicField->getFormat() == 2)
                 $this->filter .= " DATE('".$this->dynamicValue."')";
             else {
                 $this->filter .= " '".$this->dynamicValue."' ";
@@ -148,7 +169,7 @@ class ControllerFilter {
      * 
      * @return void
      */
-    public function addPKFilter($PKFieldName, $value) {
+    public function addPKFilter($PKFieldName, $value): void {
         $this->filter .= " AND ".$PKFieldName." = ".$value." ";
     }
 
@@ -157,7 +178,7 @@ class ControllerFilter {
      * 
      * @return string
      */
-    public function getFilter() {
+    public function getFilter(): string {
         return $this->filter;
     }
 
@@ -168,7 +189,7 @@ class ControllerFilter {
      * 
      * @return void
      */
-    public function setDynamicValue($value) {
+    public function setDynamicValue($value): void {
         $this->dynamicValue = $value;
     }
 
@@ -177,7 +198,7 @@ class ControllerFilter {
      * 
      * @return string
      */
-    public function getDynamicFieldName() {
+    public function getDynamicFieldName(): string {
         return $this->dynamicFieldName;
     }
 }

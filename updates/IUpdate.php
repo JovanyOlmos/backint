@@ -1,9 +1,9 @@
 <?php
 namespace backint\update;
 
-abstract class IUpdate {
-    abstract public function script();
+interface iUpdate {
+    public function script();
 
-    abstract public function version();
+    public function version();
 }
 ?>

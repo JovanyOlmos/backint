@@ -1,10 +1,9 @@
 <?php
 namespace backint\core;
-use backint\core\http;
+use backint\core\Http;
 
-require_once("./definitions/HTTP.php");
-require_once("./core/http.php");
 class ErrObj {
+
     /**
      * Error message
      * 
@@ -25,8 +24,10 @@ class ErrObj {
      * @param string $err -> Mensaje de error.
      * 
      * @param int $code -> Http Error Code
+     * 
+     * @return void
      */
-    public function __construct($err, $code) {
+    public function __construct($err = "", $code = 0) {
         $this->message = $err;
         $this->code = $code;
     }
@@ -64,6 +65,8 @@ class ErrObj {
      * Set the error message
      * 
      * @param string
+     * 
+     * @return void
      */
     public function setMessage($message): void {
         $this->message = $message;
@@ -73,6 +76,8 @@ class ErrObj {
      * Set the error code
      * 
      * @param int
+     * 
+     * @return void
      */
     public function setCode($code): void {
         $this->code = $code;
@@ -86,12 +91,11 @@ class ErrObj {
     public function sendError(): void {
         $sapi_type = php_sapi_name();
         if (substr($sapi_type, 0, 3) == 'cgi')
-            header("Status: ".$this->code." ".HTTP_MESSAGE[$this->code]."");
+            header("Status: ".$this->code." ".Http::HTTP_MESSAGE[$this->code]."");
         else
-            header("HTTP/1.1 ".$this->code." ".HTTP_MESSAGE[$this->code]."");
-        $json = '{"message": "'.$this->message.'"}';
-        $http = new http();
-        $http->sendResponse($this->code, $json);
+            header("HTTP/1.1 ".$this->code." ".Http::HTTP_MESSAGE[$this->code]."");
+        $json = '{"error": "'.$this->message.'"}';
+        Http::sendResponse($this->code, $json);
     }
 }
 ?>

@@ -1,46 +1,102 @@
 <?php
-require_once("./definitions/SQLFormat.php");
 
-/* FOLDER CONFIGURATION */
-define("ROUTE_INDEX", "backint/");
+class Configuration {
+    /**
+     * Server folder
+     * 
+     * @var string
+     */
+    const ROUTE_INDEX = "/backint/";
 
-/* DATABASE CONFIGURATION */
-define("DATABASE_NAME", "vestimenta");
-define("DATABASE_HOST", "localhost");
-define("DATABASE_USER", "root");
-define("DATABASE_PASSWORD", "");
+    /**
+     * Database name
+     * 
+     * @var string
+     */
+    const DATABASE_NAME = "backint";
 
-/* SECURITY CONFIGURATION */
-define("ALLOWED_HEADERS", "*");
-define("ALLOWED_METHODS", array(
-    "GET",
-    "PUT",
-    "OPTIONS",
-    "DELETE",
-    "POST"
-));
-define("ALLOWED_ORIGINS", "*");
-define("API_KEY", "1_6+n!@ST1C@3Kpr11nk7");
+    /**
+     * Database host
+     * 
+     * @var string
+     */
+    const DATABASE_HOST = "localhost";
 
-/* CHARSET */
-define("DEFAULT_CHARSET", "UTF-8");
+    /**
+     * Database user
+     * 
+     * @var string
+     */
+    const DATABASE_USER = "root";
 
-/* BASIC AUTH */
-define("AUTH_ACTIVE", false);
+    /**
+     * Database password
+     * 
+     * @var string
+     */
+    const DATABASE_PASSWORD = "";
 
-/**
- * JWT Auth Config
- */
-define("AUTH_JWT_ACTIVE", false);
-define("JWT_KEY", "J2IA;D.-id28=i926?s");
-define("JWT_ENCRYPT", "HS512");
-define("JWT_EXPIRED_MINUTES", 30);
+    /**
+     * Allowed headers
+     * 
+     * @var string
+     */
+    const ALLOWED_HEADERS = "*";
 
-define("READ", "1");
-define("WRITE", "2");
-define("DELETE", "3");
-define("READ_WRITE", "4");
-define("READ_DELETE", "5");
-define("WRITE_DELETE", "6");
-define("ALL", "7");
+    /**
+     * Allowed methods. Write without white space between.
+     * 
+     * @var string
+     */
+    const ALLOWED_METHODS = "GET,PUT,OPTIONS,POST,PATCH,DELETE";
+    
+    /**
+     * Allowed origins
+     * 
+     * @var string
+     */
+    const ALLOWED_ORIGINS = "*";
+
+    /**
+     * Server key. Pass by header api-key
+     * 
+     * @var string
+     */
+    const API_KEY = "1_6+n!@ST1C@3Kpr11nk7";
+
+    /**
+     * Charset configuration
+     * 
+     * @var string
+     */
+    const DEFAULT_CHARSET = "UTF-8";
+
+    /**
+     * Set JWT Auth
+     * 
+     * @var bool
+     */
+    const AUTH_JWT_ACTIVE = false;
+
+    /**
+     * Key to crypt JWT
+     * 
+     * @var string
+     */
+    const JWT_KEY = "J2IA;D.-id28=i926?s";
+
+    /**
+     * Crypt algorithm
+     * 
+     * @var string
+     */
+    const JWT_ENCRYPT = "HS512";
+
+    /**
+     * Expiration time for JWT (minutes)
+     * 
+     * @var int
+     */
+    const JWT_EXPIRED_MINUTES = 30;
+}
 ?>

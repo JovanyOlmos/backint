@@ -1,28 +1,33 @@
 <?php
+
 namespace backint\core;
+
 use backint\core\ErrObj;
-require_once("./core/ErrObj.php");
-require_once("./definitions/HTTP.php");
+use backint\core\Http;
+use Configuration;
 use Mysqli, Exception;
 
-class DBObj {
+class DBObj implements iDBObj {
+
+    /**
+     * MySQL connection
+     * 
+     * @var mysqli
+     */
     private $connection;
 
+    /**
+     * Number of records in query
+     * 
+     * @var int
+     */
     private $num_records = 0;
 
     /**
-     * Connect to DB. Initialize a MySQLi Object
+     * Constructor
      */
     public function __construct() {
-        try {
-            $this->connection = new mysqli(DATABASE_HOST, DATABASE_USER, DATABASE_PASSWORD, DATABASE_NAME);
-        } catch (Exception  $th) {
-            $err = new ErrObj("Fatal error on server. ".$th->getMessage()
-                ." Linea: ".$th->getLine()
-                ." Archivo: ".$th->getFile(), INTERNAL_SERVER_ERROR);
-            $err->sendError();
-            die();
-        }
+        
     }
 
     /**
@@ -33,6 +38,7 @@ class DBObj {
      * @return mysqli_result
      */
     public function getFetchAssoc($query) {
+        $this->initConn();
         try {
             if($result = mysqli_query($this->connection, $query)) {
                 $this->num_records = $result->num_rows;
@@ -46,7 +52,7 @@ class DBObj {
         } catch (Exception $th) {
             $err = new ErrObj("Fatal error on server. ".$th->getMessage()
                 ." Linea: ".$th->getLine()
-                ." Archivo: ".$th->getFile(), INTERNAL_SERVER_ERROR);
+                ." Archivo: ".$th->getFile(), Http::INTERNAL_SERVER_ERROR);
             $err->sendError();
             mysqli_close($this->connection);
             die();
@@ -61,14 +67,15 @@ class DBObj {
      * @return ErrObj
      */
     public function doQuery($query): ErrObj {
+        $this->initConn();
         if($result = mysqli_query($this->connection, $query)) {
             mysqli_close($this->connection);
-            return new ErrObj("", CREATED);
+            return new ErrObj("", Http::CREATED);
         }
         else {
             $err = mysqli_error($this->connection);
             mysqli_close($this->connection);
-            return new ErrObj("".$err, CONFILCT);
+            return new ErrObj("Error al procesar la consulta: ".$err, Http::CONFILCT);
         }
     }
 
@@ -79,6 +86,27 @@ class DBObj {
      */
     public function getNumRecords() {
         return $this->num_records;
+    }
+
+    /**
+     * Connect to DB. Initialize a MySQLi Object
+     */
+    private function initConn() {
+        try {
+            $this->connection = 
+                new mysqli(
+                    Configuration::DATABASE_HOST, 
+                    Configuration::DATABASE_USER, 
+                    Configuration::DATABASE_PASSWORD, 
+                    Configuration::DATABASE_NAME
+                );
+        } catch (Exception  $th) {
+            $err = new ErrObj("Fatal error on server. ".$th->getMessage()
+                ." Linea: ".$th->getLine()
+                ." Archivo: ".$th->getFile(), Http::INTERNAL_SERVER_ERROR);
+            $err->sendError();
+            die();
+        }
     }
 }
 ?>

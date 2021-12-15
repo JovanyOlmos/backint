@@ -2,15 +2,14 @@
 namespace backint\server;
 use backint\core\ErrObj;
 use backint\core\AuthJWT;
+use backint\core\DBObj;
+use backint\core\Http;
+use backint\core\QuickQuery;
+use Configuration;
 
-require_once("./config/config.php");
-require_once("./config/routes.php");
-require_once("./core/ErrObj.php");
-require_once("./core/AuthJWT.php");
-
-class router{
+class Router {
+    
     /**
-     * Constructor
      * Execute APIModel function
      * 
      * @param array $action
@@ -19,36 +18,35 @@ class router{
      * 
      * @param array $requestBody
      */
-    public function __construct($action, $params, $requestBody) {
+    public static function process($method, $mainRoute, $params, $requestBody) {
         try {
-            require_once("./server/api-models/".$action["class"].".php");
-            if(AUTH_JWT_ACTIVE && $action["jwt"]) {
-                $jwt = new AuthJWT();
+            require_once("./app/controllers/Controller".ucfirst($mainRoute[0]).".php");
+            require_once("./app/models/Model".ucfirst($mainRoute[0]).".php");
+            $className = "backint\app\controllers\\";
+            $className .= "Controller".ucfirst($mainRoute[0]);
+            $db = new DBObj();
+            $quickQuery = new QuickQuery($db);
+            $class = new $className($quickQuery);
+            $routeSettings = $class->getRouteSetting($method, $mainRoute[1]);
+            if(Configuration::AUTH_JWT_ACTIVE && $routeSettings["jwt"]) {
                 $token = null;
                 if(array_key_exists("token", getallheaders()))
                     $token = getallheaders()["token"];
-                /*foreach (getallheaders() as $nombre => $valor) {
-                    if($nombre == "token")
-                        $token = $valor;
-                }*/
-                if($jwt->checkToken($token) == null) {
-                    $err = new ErrObj("Invalid token", UNAUTHORIZED);
+                if(AuthJWT::checkToken($token) == null) {
+                    $err = new ErrObj("Invalid token", Http::UNAUTHORIZED);
                     $err->sendError();
                     die();
                 }
             }
-            $className = "backint\server\api\\";
-            $className .= $action["class"];
-            $functionName = $action["function"];
-            $execute = new $className();
+            $functionName = $mainRoute[1];
             if($requestBody != null)
-                $execute->$functionName($params, $requestBody);
+                $class->$functionName($params, $requestBody);
             else 
-                $execute->$functionName($params);
+                $class->$functionName($params);
         } catch (\Throwable $th) {
             $err = new ErrObj("Fatal error on server. ".$th->getMessage()
                 ." Linea: ".$th->getLine()
-                ." Archivo: ".$th->getFile(), INTERNAL_SERVER_ERROR);
+                ." Archivo: ".$th->getFile(), Http::INTERNAL_SERVER_ERROR);
             $err->sendError();
         }
     }
