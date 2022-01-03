@@ -101,15 +101,15 @@ class Json {
             if(strlen($json) > 2)
                 $json .= ",";
             $json .= '"'.$key.'":';
-            if($this->types[$key] === self::$TYPE_NULL)
+            if($this->structure[$key] === self::$TYPE_NULL)
                 $json .= "null";
-            if($this->types[$key] === self::$TYPE_STRING)
+            if($this->structure[$key] === self::$TYPE_STRING)
                 $json .= '"'.$value.'"';
-            if($this->types[$key] === self::$TYPE_NUMBER)
+            if($this->structure[$key] === self::$TYPE_NUMBER)
                 $json .= ''.$value;
-            if($this->types[$key] === self::$TYPE_JSON)
+            if($this->structure[$key] === self::$TYPE_JSON)
                 $json .= ''.$value;
-            if($this->types[$key] === self::$TYPE_ARRAY)
+            if($this->structure[$key] === self::$TYPE_ARRAY)
                 $json .= '['.$this->deserializeArray($value).']';
         }
         $json .= "}";
