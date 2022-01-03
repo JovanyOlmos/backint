@@ -61,7 +61,7 @@ def createModelObject(name):
     file.write('\t//itk autocomplete end' + os.linesep)
     file.write('\tpublic function __construct() {\n')
     file.write('\t\tparent::__construct();\n')
-    file.write('\t\t$this->setTableName("table");\n')
+    file.write('\t\t$this->setTableName("' + name + '");\n')
     file.write('\t\t$this->setPKFieldName("id");\n\n')
     file.write('\t}\n')
     file.write('}\n')
@@ -194,10 +194,10 @@ while command != "exit":
             elif fileType == "-h" or fileType == "help" or fileType == "?":
                 print(os.linesep + "Welcome to backint cmd help guide.")
                 print("\nYou can choose these next options: \n\n")
-                print("\tinterface [arg] | -i [arg] -> to generate an Interface object file\n\n")
-                print("\tmodel [arg] | -m [arg] -> to generate an API Model object file\n\n")
+                print("\tmodel [arg] | -m [arg] -> to generate a Model object file\n\n")
+                print("\tcontroller [arg] | -c [arg] -> to generate a Controller object file\n\n")
                 print("\tupdate | -u -> to generate an Update object file\n\n")
-                print("\tall [arg] | -a [arg] -> to generate both API Model and Interface object\n\n")
+                print("\tall [arg] | -a [arg] -> to generate Model and Controller object\n\n")
                 print("You can type also 'exit' to get out.\n")
             else:
                 print("Invalid command")
