@@ -1,5 +1,0 @@
-[INFO] 03:15:38: Init binnacle
-[INFO] 03:15:38: Table `products` ready.
-[INFO] 03:15:38: Reading table structure...
-[INFO] 03:15:39: Table `products` updated correctly 
- QUERY: "ALTER TABLE `products` MODIFY `name` VARCHAR(100)  NULL"
