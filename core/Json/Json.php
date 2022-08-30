@@ -1,45 +1,12 @@
 <?php
 namespace backint\core;
 
+use backint\core\db\Defaults;
+use backint\core\db\types\iBoolean;
 use backint\core\Model;
-use SQL;
+use backint\core\JsProp;
 
 class Json {
-
-    /**
-     * JSON Number property format
-     * 
-     * @var string "N"
-     */
-    public static $TYPE_NUMBER = "N";
-
-    /**
-     * JSON String property format
-     * 
-     * @var string "S"
-     */
-    public static $TYPE_STRING = "S";
-
-    /**
-     * JSON format
-     * 
-     * @var string "J"
-     */
-    public static $TYPE_JSON = "J";
-
-    /**
-     * JSON Array property format
-     * 
-     * @var string "A"
-     */
-    public static $TYPE_ARRAY = "A";
-
-    /**
-     * JSON null property format
-     * 
-     * @var string "U"
-     */
-    public static $TYPE_NULL = "U";
 
     /**
      * JSON
@@ -49,71 +16,108 @@ class Json {
     private $json;
 
     /**
-     * JSON property types
-     * 
-     * @var array
-     */
-    private $structure;
-
-    /**
      * Init a new JSON
      */
     public function __construct() {
-        $json = array();
-        $structure = array();
+        $this->json = array();
     }
 
     /**
      * Add or set a JSON property
      * 
-     * @param string $propertyName
+     * @param string
      * 
-     * @param string $propertyType
+     * @param string
      * 
-     * @param any $propertyValue
+     * @param mixed
      * 
      * @return void
      */
-    public function setProperty($propertyName, $propertyType, $propertyValue = null) {
-        $this->json[$propertyName] = $propertyValue;
-        $this->structure[$propertyName] = $propertyType;
+    public function addProperty($name, $type, $value) {
+        $this->json[$name] = new JsProp($name, $type, $value);
     }
 
     /**
-     * Get the builded JSON
+     * Get Json data into the object
      * 
-     * @return string
+     * @return array
      */
-    public function getJsonString() {
-        return $this->deserializeArray($this->json);
+    public function getJsonData() {
+        return $this->json;
     }
 
     /**
-     * Convert an assoc array in a JSON string
+     * Get the builded JSON. Recieve a Json or an array of Json.
      * 
-     * @param array
+     * @param mixed
      * 
      * @return string
      */
-    private function deserializeArray($array) {
-        $json = "{";
-        foreach ($array as $key => $value) {
-            if(strlen($json) > 2)
-                $json .= ",";
-            $json .= '"'.$key.'":';
-            if($this->structure[$key] === self::$TYPE_NULL)
-                $json .= "null";
-            if($this->structure[$key] === self::$TYPE_STRING)
-                $json .= '"'.$value.'"';
-            if($this->structure[$key] === self::$TYPE_NUMBER)
-                $json .= ''.$value;
-            if($this->structure[$key] === self::$TYPE_JSON)
-                $json .= ''.$value;
-            if($this->structure[$key] === self::$TYPE_ARRAY)
-                $json .= '['.$this->deserializeArray($value).']';
+    public static function deserializeJson($json) {
+        $jsonString = "";
+        if(is_array($json))
+        {
+            $jsonString .= "[";
+            $index = 0;
+            foreach ($json as $item) {
+                if($index > 0)
+                {
+                    $jsonString .= ",";
+                }
+                $jsonString .= self::deserializeJson($item);
+                $index++;
+            }
+            $jsonString .= "]";
+            return $jsonString;
         }
-        $json .= "}";
-        return $json;
+        if(get_class($json) == Json::class)
+        {
+            $jsonString .= "{";
+            $index = 0;
+            foreach ($json->getJsonData() as $jsProp) {
+                if($index > 0)
+                {
+                    $jsonString .= ",";
+                }
+                $jsonString .= self::deserializeJson($jsProp);
+                $index++;
+            }
+            $jsonString .= "}";
+            return $jsonString;
+        }
+        if(get_class($json) == JsProp::class)
+        {
+            $jsonString .= '"'.$json->getName().'":';
+            if($json->getType() == JsProp::$TYPE_ARRAY)
+            {
+                $jsonString .= self::deserializeJson($json->getValue());
+            }
+            if($json->getType() == JsProp::$TYPE_JSON)
+            {
+                $jsonString .= self::deserializeJson($json->getValue());
+            }
+            if($json->getType() == JsProp::$TYPE_NUMBER)
+            {
+                $jsonString .= $json->getValue();
+            }
+            if($json->getType() == JsProp::$TYPE_JSON_STRING)
+            {
+                $jsonString .= $json->getValue();
+            }
+            if($json->getType() == JsProp::$TYPE_BOOL)
+            {
+                $jsonString .= $json->getValue() ? "true" : "false";
+            }
+            if($json->getType() == JsProp::$TYPE_STRING)
+            {
+                $jsonString .= '"'.$json->getValue().'"';
+            }
+            if($json->getType() == JsProp::$TYPE_NULL)
+            {
+                $jsonString .= 'null';
+            }
+        }
+        return $jsonString;
     }
     
     /**
@@ -130,23 +134,23 @@ class Json {
     /**
      * Parse a Json into a model object
      * 
-     * @param Model $objModel
+     * @param Model
      * 
-     * @param array $requestBody
+     * @param array
+     * 
+     * @param bool
      * 
      * @return Model
      */
-    public static function fillObjectFromJSON($objModel, $requestBody): Model {
-        foreach ($objModel->fields as $key => $field) {
-            if(array_key_exists($key, $requestBody)) {
-                $field->value = $requestBody[$key];
-            } else {
-                $field->value = "";
-            }
+    public static function fillObjectFromJSON($model, $requestBody, $useDefaults = false) {
+        foreach ($model->fields as $key => $field) {
+            $model->fields[$key]->value = array_key_exists($key, $requestBody) ? $requestBody[$key] : ($useDefaults ? $field->value : null);
         }
-        if(array_key_exists($objModel->getPKFieldName(), $requestBody))
-            $objModel->setPKValue($requestBody[$objModel->getPKFieldName()]);
-        return $objModel;
+        if(!is_null($model->getIdField()) && array_key_exists($model->getIdField()->getFieldName(), $requestBody))
+        {
+            $model->getIdField()->value = $requestBody[$model->getIdField()->getFieldName()];
+        }
+        return $model;
     }
 
     /**
@@ -154,42 +158,60 @@ class Json {
      * 
      * @param Model $objModel
      * 
+     * @param bool $useDefaults
+     * 
      * @return string
      */
-    public static function convertObjectToJSON($objModel): string {
-        $json = '{';
-        $index = 0;
-        if($objModel->getPKValue() > 0) {
-            $json .= '"'.$objModel->getPKFieldName().'": '.$objModel->getPKValue().',';
-            foreach ($objModel->fields as $key => $field) {
-                if($index > 0)
-                    $json .= ', ';
-                $json .= '"'.$key.'":'.self::setJSONPropertyFormat($field);
-                $index++;
-            }
+    public static function convertModelToJSON($objModel, $useDefaults = false) {
+        $json = new Json();
+        if(!is_null($objModel->getIdField())) {
+            $json->addProperty($objModel->getIdField()->getFieldName(), JsProp::$TYPE_NUMBER, $objModel->getIdField()->value);
         }
-        $json .= '}';
-        return $json;
+        foreach ($objModel->fields as $key => $field) {
+            $json->addProperty($key, 
+            ($field->getFormat()->hasQuotes()) ? JsProp::$TYPE_STRING 
+            : (get_class($field->getFormat()) == iBoolean::class ? JsProp::$TYPE_BOOL 
+            : JsProp::$TYPE_NUMBER), 
+            $useDefaults && is_null($field->value) ? 
+                (!is_null($field->getDefault()) && is_object($field->getDefault()) && get_class($field->getDefault()) == Defaults::class ?
+                $field->getDefault()->value : $field->getDefault()) 
+                : $field->value
+            );
+        }
+        return Json::deserializeJson($json);
     }
 
     /**
-     * Convert an object's array into a JSON
+     * Convert an model's array into a JSON
      * 
-     * @param Model $objModel
+     * @param array $objModels
      * 
      * @return string
      */
-    public static function convertArrayObjectToJSON($objModels): string {
-        $json = '[';
-        $indexObjct = 0;
-        foreach ($objModels as $objModel) {
-            if($indexObjct > 0)
-                $json .= ',';
-            $json .= self::convertObjectToJSON($objModel);
-            $indexObjct++;
+    public static function convertArrayModelToJSON($objModels, $useDefaults = false) {
+        $arrayJson = array();
+        if(is_null($objModels))
+        {
+            return "[]";
         }
-        $json .= ']';
-        return $json;
+        foreach ($objModels as $key => $model) {
+            $json = new Json();
+            if(!is_null($model->getIdField())) {
+                $json->addProperty($model->getIdField()->getFieldName(), JsProp::$TYPE_NUMBER, $model->getIdField()->value);
+            }
+            foreach ($model->fields as $key => $field) {
+                $json->addProperty($key, 
+                (($field->getFormat()->hasQuotes()) ? JsProp::$TYPE_STRING 
+                : (get_class($field->getFormat()) == iBoolean::class ? JsProp::$TYPE_BOOL 
+                : JsProp::$TYPE_NUMBER)), 
+                $useDefaults && is_null($field->value) ? 
+                (!is_null($field->getDefault()) && is_object($field->getDefault()) && get_class($field->getDefault()) == Defaults::class ?
+                $field->getDefault()->value : $field->getDefault()) 
+                : $field->value);
+            }
+            array_push($arrayJson, $json);
+        }
+        return Json::deserializeJson($arrayJson);
     }
 
     /**
@@ -201,33 +223,17 @@ class Json {
      * 
      * @return bool
      */
-    public static function checkIfJSONIsComplete($objModel, $requestBody): bool {
-        $exists = true;
+    public static function checkIfJSONIsComplete($objModel, $requestBody) {
         foreach ($objModel->fields as $key => $field) {
             if(!array_key_exists($key, $requestBody)) {
-                $exists = false;
+                return false;
             }
         }
-        return $exists;
-    }
-
-    /**
-     * Format value to valid JSON property format
-     * 
-     * @param ModelField
-     * 
-     * @return string
-     */
-    private static function setJSONPropertyFormat($modelField) {
-        if(SQL::SQL_FORMAT[$modelField->getFormat()] && $modelField->value != "null")
-            return '"'.$modelField->value.'"';
-        if($modelField->getFormat() == SQL::BOOLEAN)
+        if(!is_null($objModel->getIdField()->value) && !array_key_exists($objModel->getIdField()->getFieldName(), $requestBody))
         {
-            if($modelField->value)
-                return 'true';
-            return 'false';
+            return false;
         }
-        return $modelField->value.'';
+        return true;
     }
 }
 ?>

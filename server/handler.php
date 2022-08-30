@@ -1,8 +1,8 @@
 <?php
 namespace backint\server;
 use backint\server\Router;
-use backint\core\ErrObj;
 use backint\core\Http;
+use backint\core\Result;
 use Configuration;
 
 class Handler{
@@ -18,10 +18,10 @@ class Handler{
         try {
             Router::process($method, $mainRoute, $params, $requestBody);
         } catch (\Throwable $th) {
-            $err = new ErrObj("Fatal error on server. ".$th->getMessage()
+            $err = new Result("Fatal error on server. ".$th->getMessage()
                 ." Linea: ".$th->getLine()
-                ." Archivo: ".$th->getFile(), Http::INTERNAL_SERVER_ERROR);
-            $err->sendError();
+                ." Archivo: ".$th->getFile(), false);
+            $err->sendResult(Http::INTERNAL_SERVER_ERROR);
         }
     }
 }

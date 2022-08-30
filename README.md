@@ -1,39 +1,152 @@
 # Backint
+PHP Framework. Easier way to do an API.
 
-Backint es un Framework para construir servicios RESTFull con PHP de una manera sencilla y a su vez con la posibilidad de crear servicios complejos.
+## Get started
+### Configuration
+First step is configurate your server. You can make all settings on 'Configuration' class.
 
-## Requisitos
 
-PHP 7 o superior.
-MySQL (MariaDB) 10.4.14 o superior
-
-## Configuración
-
-Backint tiene distintas configuraciones rápidas donde se pueden definir desde la ruta del servidor hasta la autenticación. Estas configuraciones se encuentran en la clase Configuration dentro del archivo 'config.php'.
-
-## JWT Auth
-
-Backint tiene de manera nativa la autenticación por JWT, para utilizarla solo es necesario activarla desde la clase de configuración. También es posible definir una llave y un algoritmo de encriptación, los cuales serán usados para hacer dicha encriptación. Por último, también en la clase Configuration se puede establecer el tiempo en que este token será valido.
-
-Una vez activada la autenticación con JWT se necesitará proporcionar el token mediante el header 'token'. Ojo la autenticación es activada en cada ruta mediante los ajustes de ruta en cada controlador. Es decir, cada ruta puede o no funcionar con la autenticación por JWT.
-
-La función para crear los token es la función estatica `generateJWT` parte de la clase `Auth`.
-
-## Modelos
-
-Un modelo es una representación de una tabla en la base de datos, este modelo define cada uno de los campos de la tabla. El modelo es utilizado para ser el enlace entre el controlador y la estructura de la base de datos.
-
-Ejemplo de un modelo.
-
+### USING backint.py
+backint.py is a tool developed on Python. This app will help you to create some objects in a easier and faster way. 
+Commands are next:
 ```
+Create a new controller using an argument
+> itk -g -c arg
+Create a new model using an argument
+> itk -g -m arg
+Create a controller and a model using an argument
+> itk -g -a arg
+Create a new update object
+> itk -g -u
+Create getters and setters using a model by a name pased by argument
+> itk -a arg
+Show all options on the current level
+> itk ?
+```
+
+### Controllers
+A controller is the way that you can define the Backend Logic. These controllers contain all CRUD functionality, and you can define any functions as you need, just be sure to define the route.
+
+#### Here an example about Controller's structure
+```
+<?php
+namespace backint\app\controllers;
+
+use backint\core\QuickQuery;
+use backint\core\QueryBuilder;
+use backint\models\ModelTest;
+use backint\core\Http;
+use backint\core\Json;
+use backint\core\ControllerBase;
+use backint\core\ObjQL;
+
+class ControllerTest extends ControllerBase {
+
+	private $modelTest;
+
+	private QuickQuery $quickQuery;
+
+	public function __construct(QuickQuery $_quickQuery) {
+		$this->modelTest = new ModelTest();
+		$this->quickQuery = $_quickQuery;
+		$this->setRouteSettings("GET", "get_by_id", false);
+		$this->setRouteSettings("POST", "create", false);
+		$this->setRouteSettings("PUT", "update", false);
+		$this->setRouteSettings("DELETE", "delete_by_id", false);
+	}
+
+	/**
+	 * Get a record passing by param an id
+	 * 
+	 * @param mixed $params
+	 * 
+	 * @return void
+	 */
+	public function get_by_id($params) {
+		$builder = new QueryBuilder();
+		$builder->where()->addPKFilter($this->modelTest->getPKFieldName(), $params[0]);
+		$this->modelTest = $this->quickQuery->selectSimple($this->modelTest, $builder);
+		if(!is_null($this->modelTest) && $this->modelTest->getPKValue() > 0)
+		{
+			$json = Json::convertObjectToJSON($this->modelTest);
+			Http::sendResponse(Http::OK, $json);
+		}
+		else
+		{
+			Http::sendResponse(Http::NO_CONTENT);
+		}
+	}
+
+	/**
+	 * Insert a new record into database passing by body the info
+	 * 
+	 * @param mixed $params
+	 * 
+	 * @return void
+	 */
+	public function create($params, $requestBody) {
+		$this->modelTest = Json::fillObjectFromJSON($this->modelTest, $requestBody);
+		$err = $this->quickQuery->insert($this->modelTest);
+		if($err->hasErrors())
+			$err->sendError();
+		else
+			Http::sendResponse(Http::CREATED, Json::messageToJSON("Created correctly"));
+	}
+
+	/**
+	 * Update an existing record passing by body all information
+	 * 
+	 * @param mixed $params
+	 * 
+	 * @return void
+	 */
+	public function update($params, $requestBody) {
+		$this->modelTest = Json::fillObjectFromJSON($this->modelTest, $requestBody);
+		$err = $this->quickQuery->update($this->modelTest);
+		if($err->hasErrors())
+			$err->sendError();
+		else
+			Http::sendResponse(Http::CREATED, Json::messageToJSON("Updated correctly"));
+	}
+
+	/**
+	 * Delete a record passing by param an id
+	 * 
+	 * @param mixed $params
+	 * 
+	 * @return void
+	 */
+	public function delete_by_id($params) {
+		$this->modelTest->setPKValue($params[0]);
+		$err = $this->quickQuery->delete($this->modelTest);
+		if($err->hasErrors())
+			$err->sendError();
+		else
+			Http::sendResponse(Http::CREATED, Json::messageToJSON("Deleted correctly"));
+	}
+}
+?>
+```
+
+### Models
+Did you heard about a Model?. Here you should define your structure data table. This object will be the reference between your table in database and your controller.
+A model have some private vars (each per no id field in your database table). After that each var have to be initialized using addField method.
+Finaly, you should build 'getter' and 'setter' functions.
+IMPORTANT. Each var must to be named like its reference in the table from database.
+
+#### Model example
+```
+<?php
+namespace backint\models;
+
+use backint\core\Model;
+use SQL;
+
 class ModelTest extends Model {
-	/*Dentro de este bloque debes definir tus variables para que el sistema CMD del Framework pueda hacer el autocompletado de las mismas*/
 	//itk autocomplete start
 	private $name, $default_date;
 	//itk autocomplete end
 
-	/*En el constuctor se asignan el nombre de la tabla, el nombre de la llave primaria y se asignan cada uno de los campos dentro de la tabla.
-	Para agregar un nuevo campo se debe de escribir el nombre de la tabla, el tipo de dato y si existe algún valor como default para ese campo.*/
 	public function __construct() {
 		parent::__construct();
 		$this->setTableName("test");
@@ -42,7 +155,6 @@ class ModelTest extends Model {
 		$this->default_date = $this->addField("default_date", SQL::DATE, "NOW()");
 	}
 
-	/*Getters y setters creados por el CMD del Framework*/
 	public function getName(){
 		return $this->name;
 	}
@@ -60,62 +172,72 @@ class ModelTest extends Model {
 	}
 
 }
+?>
 ```
 
-## Controladores
+### Routing
+To add a new route you should added in its own path-definitions file. Routes in Backint are composed by a class name, a function name and a jwt field to able this feature.
+NOTE. Routes from a same method cannot share a name, but two routes from diferent method can share the name.
 
-En los controladores se definen las funciones y rutas de dicho controlador. Cada controlador es representado por su nombre al hacer una petición Http. Por ejemplo `ControllerTest` corresponde a la ruta `/test/`.
+### ObjQL
+Did you hear about GraphQL?
+Backint contains an option where you can define an array with all fields you need, after that write an SQL Sentence and get info on JSON ready to send.
 
-El siguiente parámetro de la ruta es el nombre de la función dentro del controlador al cual hacemos una petición. Ejemplo `/get_by_id/`.
+To use an ObjQL you should define a JSON structure using PHP arrays.
 
-El controlador también es el encargado de ajustar los parametros de las rutas, como el JWT Auth. Estos ajustes se hacen en el constructor y es necesario definir un ajuste por cada ruta creada del controlador. Por ejemplo:
-
+#### Example
 ```
-$this->setRouteSettings("GET", "get_by_id", false);
-```
+$this->objQL = new ObjQL(array(
+            array("id", INT), 
+            array("folio", VARCHAR)
+        ));
 
-Para crear un controlador desde el CMD se hace uso del siguiente comando:
-`itk -g -c arg`
-
-## QuickQuery
-
-La herramienta `QuickQuery` nos permite crear consultas básicas a partir de un modelo. Existen cinco tipos de consultas `insert, delete, update, selectSimple, selectMultiple` las cuales realizan consultas tipo CRUD en la base de datos usando como referencia un modelo.
-
-Para el caso de las consultas tipo `SELECT`, se necesita proporcionar un `QueryBuilder` el cual indicará los filtros que llevará la consulta. Es importante mencionar que este tipo de consultas no aplicarán filtros tipo 'JOIN' aunque estos esten declarados en el `QueryBuilder`.
-
-## QueryBuilder
-
-Esta herramienta permite crear consultas más complejas incluyendo filtros, ordenamientos, limites y uniones entre tablas.
-
-El funcionamiento es parecido a crear una consulta donde seleccionaremos la función que necesitemos y llenaremos los parametros si es que estos son necesarios.
-
-Vease la carpeta `Extensions` para estudiar el funcionamiento completo de esta herramienta.
-
-## ObjQL
-
-Cuando se desarrollo el `QuickQuery` se encontro con la deficiencia de no poder crear respuestas complejas como podría ser un JSON que hace uso de información de diferentes tablas. Por ese motivo se creo ObjQL.
-
-ObjQL es una herramienta que permite definir un JSON a partir de un arreglo, este arreglo contiene un alias y un tipo, el cual será asignado al JSON. 
-
-Ejemplo.
-
-```
-$objQL = new ObjQL(array(
-			array("id", INT),
-			array("name", VARCHAR),
-			array("supplier_id", INT)
-		));
+$json = $this->objQL->getJSON("SELECT id, folio FROM fichas WHERE ".$params[0]." = ".$params[1].";");
 ```
 
-Para hacer uso de la herramienta, es necesario definir el ObjQL con el arreglo en el constructor. También es necesario agregar los campos del modelo al ObjQL.
+Notice this technology is on beta version yet. You can find some errors and some limitations. We are working on it!.
 
-Ejemplo.
+### UPDATES
+"Updates" is a way to keep the model updated. It works using an "update engine" who checks each Update and
+try to apply in the database. This means you have not worry about miss a new change.
+Just create a new Update object for each change or changes group. This Update object has to implement abstract class IUpdate. Each update object have always diferent name... Obvious reasons. We're recommending name them
+like "UpdateYYYYMMDDHHmm" this way to name them could be useful.
+An Update object has two methods and we have an example for you... Watch below.
 
 ```
-$objQL->addPKField($this->oiSuppliers);
-$objQL->addField($this->oiSuppliers, $this->oiSuppliers->getCompany_name(), "company_name");
+\\You have to write your MySQL script right here
+public function script() {
+    return "CREATE TABLE products (
+        id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+        name VARCHAR(20)
+    );";
+}
+
+\\This means the update version. You have to init it always at 1
+\\If you make a change and you want to run it again, just increase by 1.
+public function version() {
+    return 1;
+}
 ```
 
-Finalmente para obtener el JSON debemos de pasar un `QueryBuilder` como parametro de la función `buildJsonFromQuery($queryBuilder);` del ObjQL. Nota. También debe asignarse una tabla pivote en caso de que la consulta del ObjQL contenga varias tablas `$objQL->setDataSource($oiBrands);`.
+How to run this?
+First you have to declare your computer path on config.php file (inside updates folder)
+Something like:
 
-Puede existir el caso donde tengamos que relacionar un filtro a una variable desconocida en un principio y la cual cambie. Por ejemplo, cuando necesitamos un JSON con información de otra tabla, pero esta información depende de algun campo de la primer tabla que desconocemos hasta que la primer consulta sea ejecutada. En ese caso es necesario usar un filtro dinamico en el `QueryBuilder` de la siguiente manera `$queryBuilder->where()->setDynamicFilter($oiBrands->getSupplier_id(), "id");` donde el primer campo es el campo del modelo a tomar como filtro y el segundo es el nombre con el cual se relacionará.
+```
+define("UPDATE_DB_NAME", "yourdatabase");
+define("UPDATE_DB_HOST", "localhost");
+define("UPDATE_DB_USER", "root");
+define("UPDATE_DB_PASSWORD", "");
+```
+
+Once you have declared your values, you need to modify line 2 on run.php file. This time you need to specify where config.php is.
+
+```
+require_once("C:/xampp/htdocs/backint/updates/config.php");
+```
+
+Finally, just go to your php installation path and run `php C:\xampp\htdocs\backint\updates\run.php`. Or you can declare the path of php like global enviroment and run the code in any location.
+Note: Change the path according to your own path.
+
+Created by Interik Team!
