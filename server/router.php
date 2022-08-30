@@ -1,10 +1,13 @@
 <?php
 namespace backint\server;
-use backint\core\ErrObj;
+
 use backint\core\AuthJWT;
-use backint\core\DBObj;
+use backint\core\db\builder\MySQLQueryBuilder;
+use backint\core\db\MySQL;
+use backint\core\db\RelationalQuickQuery;
 use backint\core\Http;
-use backint\core\QuickQuery;
+use backint\core\ObjQL;
+use backint\core\Result;
 use Configuration;
 
 class Router {
@@ -21,33 +24,39 @@ class Router {
     public static function process($method, $mainRoute, $params, $requestBody) {
         try {
             require_once("./app/controllers/Controller".ucfirst($mainRoute[0]).".php");
-            require_once("./app/models/Model".ucfirst($mainRoute[0]).".php");
-            $className = "backint\app\controllers\\";
+            foreach (glob("./app/models/*.php") as $filename)
+            {
+                require($filename);
+            }
+            $className = "backint\\app\\controllers\\";
             $className .= "Controller".ucfirst($mainRoute[0]);
-            $db = new DBObj();
-            $quickQuery = new QuickQuery($db);
-            $class = new $className($quickQuery);
+            $db = new MySQL();
+            $queryBuilder = new MySQLQueryBuilder();
+            $quickQuery = new RelationalQuickQuery($db, $queryBuilder);
+            $class = new $className($quickQuery, $queryBuilder);
             $routeSettings = $class->getRouteSetting($method, $mainRoute[1]);
             if(Configuration::AUTH_JWT_ACTIVE && $routeSettings["jwt"]) {
                 $token = null;
                 if(array_key_exists("token", getallheaders()))
                     $token = getallheaders()["token"];
                 if(AuthJWT::checkToken($token) == null) {
-                    $err = new ErrObj("Invalid token", Http::UNAUTHORIZED);
-                    $err->sendError();
+                    $err = new Result("Invalid token", false);
+                    $err->sendResult(Http::UNAUTHORIZED);
                     die();
                 }
             }
             $functionName = $mainRoute[1];
-            if($requestBody != null)
+            if($requestBody != null) {
                 $class->$functionName($params, $requestBody);
-            else 
-                $class->$functionName($params);
+                return;
+            }
+            $class->$functionName($params);
+            return;
         } catch (\Throwable $th) {
-            $err = new ErrObj("Fatal error on server. ".$th->getMessage()
+            $err = new Result("Fatal error on server. ".$th->getMessage()
                 ." Linea: ".$th->getLine()
-                ." Archivo: ".$th->getFile(), Http::INTERNAL_SERVER_ERROR);
-            $err->sendError();
+                ." Archivo: ".$th->getFile(), false);
+            $err->sendResult(Http::INTERNAL_SERVER_ERROR);
         }
     }
 }

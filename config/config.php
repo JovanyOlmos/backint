@@ -44,7 +44,7 @@ class Configuration {
     const ALLOWED_HEADERS = "*";
 
     /**
-     * Allowed methods. Write without white space between.
+     * Allowed methods. Write without blank space between.
      * 
      * @var string
      */
@@ -76,7 +76,7 @@ class Configuration {
      * 
      * @var bool
      */
-    const AUTH_JWT_ACTIVE = false;
+    const AUTH_JWT_ACTIVE = true;
 
     /**
      * Key to crypt JWT
